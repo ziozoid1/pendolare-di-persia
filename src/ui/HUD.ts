@@ -63,9 +63,18 @@ export class HUD {
     this.laptop.setTexture(has ? SOLID.white : SOLID.dim);
   }
 
-  setProgress(ratio: number, screenIndex: number, screens: number): void {
+  setProgress(ratio: number): void {
     this.progressFill.setDisplaySize(Math.max(1, Math.round(74 * ratio)), 4);
-    this.screenLabel.setText(`SCHERMATA ${screenIndex}/${screens}`);
+  }
+
+  /** Riga sotto la barra: di default la schermata, negli stage a stanza il resto. */
+  setStatus(text: string): void {
+    this.screenLabel.setText(text);
+  }
+
+  /** Colore della barra: serve agli stage dove non misura una distanza. */
+  setProgressColor(textureKey: string): void {
+    this.progressFill.setTexture(textureKey);
   }
 
   say(text: string, color = "#ffffff"): void {

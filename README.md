@@ -21,8 +21,12 @@ configurazione.
 ## Comandi di gioco
 
 Frecce per muoversi, shift per correre, su o spazio per saltare, giu' per
-stringere la borsa al petto quando il ladro allunga la mano, N per dire "no
-grazie" ai venditori, R per ricominciare lo stage.
+stringere la borsa al petto quando il ladro allunga la mano, R per ricominciare
+lo stage.
+
+**N e' il tasto della parola.** Serve per dire "no grazie" ai venditori dello
+stage 1 e "c'e' la fila" a chi prova a scavalcarti nello stage 3: stessa
+grammatica, il posto della spada nel PoP originale.
 
 ## Come e' fatto
 
@@ -79,6 +83,28 @@ pensilina, parete di fondo, pavimento), ripetibile in orizzontale.
    integrale del PoP (dove e' il frame a decidere lo spostamento) si ascolta
    `ANIMATION_UPDATE` e si muove il corpo di uno scarto per frame invece di
    usare la velocita'.
+
+### Lo stage 3 e come non e' un platform
+
+Negli ascensori il verbo non e' avanzare: e' **restare**. Il posto in fila e'
+uno slot, e davanti allo slot c'e' un muro morbido, quindi superarlo e'
+impossibile: se provi a passare davanti a chi aspetta, la fila protesta e
+perdi pazienza. La fila avanza da sola quando una cabina si riempie, e tu devi
+seguirla entro 12 px, altrimenti in 1,3 secondi il posto e' di un altro.
+
+Tutto sta in `entities/ElevatorHall.ts`, che modella la fila come un array
+ordinato dove uno degli elementi e' la stringa `"player"`. Da li' vengono
+gratis tutte le operazioni: imbarco (`splice(0, capienza)`), scavalcamento
+(`splice(slot, 0, tizio)`), nuovi arrivi (`push`), posto perso
+(`splice(slot, 1)`). La posizione sullo schermo di ognuno e' solo
+`frontX - indice * 13`.
+
+Le cabine hanno una sequenza di capienze fissa (`CAPACITY_SEQUENCE`), zero
+compreso: una cabina piena non e' un guasto, e' il gioco.
+
+Gli stage a stanza non hanno una distanza da misurare, quindi la barra della
+HUD si reinterpreta: un'entita' chiama `host.setObjective(0..1, "IN FILA: 3°")`
+e `StageScene` usa quello invece della distanza dall'uscita.
 
 ### Aggiungere uno stage
 

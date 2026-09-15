@@ -15,6 +15,8 @@ export interface StageHost extends Phaser.Scene {
   lose(reason: string): void;
   completeStage(): void;
   say(message: string, color?: string): void;
+  /** Reinterpreta la barra della HUD: 0..1 piu' etichetta. */
+  setObjective(ratio: number, label: string): void;
   startEncounter(options: EncounterOptions): void;
 }
 

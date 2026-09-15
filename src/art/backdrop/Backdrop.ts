@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { SkinManifest } from "../skin";
 import { ImageBackdrop } from "./ImageBackdrop";
+import { LobbyBackdrop } from "./LobbyBackdrop";
 import { StationBackdrop } from "./StationBackdrop";
 
 /**
@@ -24,6 +25,8 @@ export function createBackdrop(name: string, skin: SkinManifest | null): Backdro
   switch (name) {
     case "stazione":
       return new StationBackdrop();
+    case "atrio":
+      return new LobbyBackdrop();
     default:
       // I fondali degli stage successivi ricadono qui finche' non esistono.
       return new StationBackdrop();

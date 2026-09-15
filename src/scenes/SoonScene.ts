@@ -35,17 +35,6 @@ export class SoonScene extends Phaser.Scene {
 export function buildRemainingScenes(): SoonScene[] {
   return [
     new SoonScene(
-      "Stage3",
-      "STAGE 3 - GLI ASCENSORI",
-      [
-        "Fare la fila correttamente, non farsi",
-        "scavalcare da chi va di fretta.",
-        "Serve: entita' coda (posizione in fila),",
-        "cabine con capienza, tasto per tenere il posto."
-      ],
-      "Stage4"
-    ),
-    new SoonScene(
       "Stage4",
       "STAGE 4 - IL BADGE",
       [

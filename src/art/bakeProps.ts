@@ -118,3 +118,87 @@ export function bakeBoard(blink: boolean): BakedProp {
     });
   });
 }
+
+/**
+ * STAGE 3 - atrio della Torre Saverio.
+ * Marmo freddo, luci al soffitto, due porte d'ascensore.
+ */
+export function bakeLobbyProps(): BakedProp[] {
+  const marble = "#3a3a4e";
+  const marbleLight = "#4e4e66";
+  const steel = "#6a6a80";
+
+  return [
+    // parete di marmo (piastrellabile)
+    prop("prop:lobby_wall", 24, 120, (ctx) => {
+      rect(ctx, 0, 0, 24, 120, marble);
+      rect(ctx, 0, 0, 1, 120, marbleLight);
+      rect(ctx, 0, 40, 24, 1, "#32324a");
+      rect(ctx, 0, 41, 24, 1, marbleLight);
+      rect(ctx, 12, 41, 1, 79, "#32324a");
+    }),
+
+    // soffitto con plafoniere (piastrellabile)
+    prop("prop:lobby_ceiling", 48, 30, (ctx) => {
+      rect(ctx, 0, 0, 48, 30, "#22223a");
+      rect(ctx, 0, 27, 48, 3, "#2c2c48");
+      rect(ctx, 10, 6, 28, 4, steel);
+      rect(ctx, 12, 7, 24, 2, "#ffff55");
+    }),
+
+    // pavimento lucido (piastrellabile)
+    prop("prop:lobby_floor", 24, 32, (ctx) => {
+      rect(ctx, 0, 0, 24, 32, "#34344a");
+      rect(ctx, 0, 0, 24, 2, steel);
+      rect(ctx, 0, 2, 24, 4, "#3e3e58");
+      rect(ctx, 0, 2, 1, 30, "#2a2a3e");
+      rect(ctx, 12, 2, 1, 30, "#2a2a3e");
+    }),
+
+    // porta chiusa
+    prop("prop:lift_closed", 30, 54, (ctx) => {
+      rect(ctx, 0, 0, 30, 54, steel);
+      rect(ctx, 2, 2, 26, 52, "#8a8aa0");
+      rect(ctx, 2, 2, 26, 1, EGA.white);
+      rect(ctx, 14, 2, 2, 52, "#55556e");
+      rect(ctx, 4, 24, 4, 1, "#55556e");
+      rect(ctx, 22, 24, 4, 1, "#55556e");
+    }),
+
+    // porta aperta: si vede la cabina
+    prop("prop:lift_open", 30, 54, (ctx) => {
+      rect(ctx, 0, 0, 30, 54, steel);
+      rect(ctx, 2, 2, 26, 52, "#14141f");
+      rect(ctx, 6, 4, 18, 2, "#ffff55");
+      rect(ctx, 4, 8, 22, 40, "#1e1e2e");
+      rect(ctx, 4, 46, 22, 2, "#2a2a3e");
+      rect(ctx, 2, 2, 3, 52, "#8a8aa0");
+      rect(ctx, 25, 2, 3, 52, "#8a8aa0");
+    }),
+
+    // display del piano sopra la porta
+    prop("prop:lift_panel", 30, 9, (ctx) => {
+      rect(ctx, 0, 0, 30, 9, EGA.black);
+      rect(ctx, 0, 0, 30, 1, steel);
+    }),
+
+    // impronte a terra: segnano il tuo posto in fila
+    prop("prop:queue_mark", 11, 4, (ctx) => {
+      rect(ctx, 0, 1, 4, 3, "#55ff55");
+      rect(ctx, 7, 1, 4, 3, "#55ff55");
+      rect(ctx, 0, 0, 4, 1, "#00aa00");
+      rect(ctx, 7, 0, 4, 1, "#00aa00");
+    }),
+
+    // pianta ornamentale d'ordinanza
+    prop("prop:plant", 14, 26, (ctx) => {
+      rect(ctx, 4, 18, 6, 8, EGA.brown);
+      rect(ctx, 3, 17, 8, 2, "#cc7722");
+      rect(ctx, 6, 8, 2, 10, "#006622");
+      for (const [x, y, w, h] of [[1, 6, 5, 2], [8, 4, 5, 2], [2, 10, 4, 2], [8, 9, 5, 2], [4, 2, 6, 2]] as Array<[number, number, number, number]>) {
+        rect(ctx, x, y, w, h, EGA.green);
+      }
+      rect(ctx, 5, 0, 4, 3, "#55aa33");
+    })
+  ];
+}

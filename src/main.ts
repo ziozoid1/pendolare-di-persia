@@ -4,6 +4,7 @@ import { BootScene } from "./scenes/BootScene";
 import { TitleScene } from "./scenes/TitleScene";
 import { Stage1Scene } from "./scenes/Stage1Scene";
 import { Stage2Scene } from "./scenes/Stage2Scene";
+import { Stage3Scene } from "./scenes/Stage3Scene";
 import { buildRemainingScenes } from "./scenes/SoonScene";
 
 /**
@@ -39,6 +40,7 @@ const game = new Phaser.Game({
     new TitleScene(),
     new Stage1Scene(),
     new Stage2Scene(),
+    new Stage3Scene(),
     ...buildRemainingScenes()
   ]
 });

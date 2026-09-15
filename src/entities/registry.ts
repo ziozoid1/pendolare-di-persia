@@ -1,4 +1,5 @@
 import type { EntityDef } from "../core/types";
+import { ElevatorHall } from "./ElevatorHall";
 import { ExitGate } from "./ExitGate";
 import { Seller } from "./Seller";
 import { Suitcase } from "./Suitcase";
@@ -17,7 +18,8 @@ export const ENTITY_KINDS: Record<string, EntityCtor> = {
   tourist: Tourist,
   seller: Seller,
   thief: Thief,
-  exit: ExitGate
+  exit: ExitGate,
+  "elevator-hall": ElevatorHall // stage 3: fila, cabine, scavalcatori
 };
 
 export function spawnEntity(host: StageHost, def: EntityDef): Entity | null {

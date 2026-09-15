@@ -24,7 +24,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   abstract readonly def: StageDef;
 
   player!: Player;
-  private hud = new HUD(this);
+  protected hud = new HUD(this);
   private backdrop!: Backdrop;
   private entities: Entity[] = [];
   private floorGroup!: Phaser.Physics.Arcade.StaticGroup;
@@ -35,6 +35,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   private clock = 0;
   private patience = 3;
   private lastSafeX = 0;
+  private objective: { ratio: number; label: string } | null = null;
   private restartKey!: Phaser.Input.Keyboard.Key;
   private confirmKey!: Phaser.Input.Keyboard.Key;
 
@@ -54,6 +55,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.overlayObjects = [];
     this.encounter = null;
     this.lastSafeX = this.def.startX;
+    this.objective = null;
 
     const skin = (this.registry.get("skin") as SkinManifest | null) ?? null;
     this.backdrop = createBackdrop(this.def.backdrop, skin);
@@ -66,15 +68,15 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.player.sprite.setDepth(DEPTH.player);
     this.physics.add.collider(this.player.sprite, this.floorGroup);
 
-    for (const def of this.def.entities) {
-      const e = spawnEntity(this, def);
-      if (e) this.entities.push(e);
-    }
-
     this.hud.create(this.patience);
     this.hud.setClock(this.clock, false, 0);
     this.hud.setPatience(this.patience);
     this.hud.setLaptop(true);
+
+    for (const def of this.def.entities) {
+      const e = spawnEntity(this, def);
+      if (e) this.entities.push(e);
+    }
 
     this.cameras.main.setBounds(0, 0, this.def.width, GAME_H);
     this.cameras.main.setScroll(0, 0);
@@ -156,11 +158,26 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     const screen = Math.floor(this.player.x / GAME_W);
     cam.setScroll(Math.min(screen * GAME_W, this.def.width - GAME_W), 0);
 
-    this.hud.setProgress(
-      Phaser.Math.Clamp(this.player.x / (this.def.width - 40), 0, 1),
-      screen + 1,
-      this.screens
-    );
+    this.reportProgress(screen);
+  }
+
+  /**
+   * Di default la barra misura la distanza dall'uscita. Gli stage che non sono
+   * corse orizzontali (fila agli ascensori, giro delle scrivanie) la
+   * reinterpretano sovrascrivendo questo metodo.
+   */
+  protected reportProgress(screenIndex: number): void {
+    if (this.objective) {
+      this.hud.setProgress(Phaser.Math.Clamp(this.objective.ratio, 0, 1));
+      this.hud.setStatus(this.objective.label);
+      return;
+    }
+    this.hud.setProgress(Phaser.Math.Clamp(this.player.x / (this.def.width - 40), 0, 1));
+    this.hud.setStatus(`SCHERMATA ${screenIndex + 1}/${this.screens}`);
+  }
+
+  setObjective(ratio: number, label: string): void {
+    this.objective = { ratio, label };
   }
 
   private checkPit(): void {
