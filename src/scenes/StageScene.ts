@@ -24,7 +24,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   abstract readonly def: StageDef;
 
   player!: Player;
-  protected hud = new HUD(this);
+  protected hud!: HUD;
   private backdrop!: Backdrop;
   private entities: Entity[] = [];
   private floorGroup!: Phaser.Physics.Arcade.StaticGroup;
@@ -47,6 +47,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   }
 
   create(): void {
+    this.hud = new HUD(this); // istanza fresca ad ogni restart: nessuno stato stantio
     this.state = "play";
     this.clock = this.def.clockStart;
     this.patience = this.def.patience;
