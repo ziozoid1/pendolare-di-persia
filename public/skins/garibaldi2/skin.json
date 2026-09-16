@@ -1,0 +1,12 @@
+{
+  "name": "garibaldi2",
+  "backdrops": {
+    "garibaldi": {
+      "layers": [
+        { "image": "fondo.png",  "y": 0,   "height": 168, "scrollFactor": 0.35, "tile": true },
+        { "image": "treni.png",  "y": 104, "height": 47,  "scrollFactor": 0.6,  "tile": true, "speed": 9 },
+        { "image": "parete.png", "y": 0,   "height": 200, "scrollFactor": 1,    "tile": true }
+      ]
+    }
+  }
+}

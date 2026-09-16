@@ -33,6 +33,8 @@ export interface BackdropLayerSkin {
   /** Se true l'immagine viene ripetuta in orizzontale. */
   tile?: boolean;
   depth?: number;
+  /** Velocita' autonoma del layer in px/s (usata per i treni). */
+  speed?: number;
 }
 
 export interface BackdropSkin {
