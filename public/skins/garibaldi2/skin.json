@@ -1,5 +1,8 @@
 {
   "name": "garibaldi2",
+  "actors": {
+    "hero": { "image": "hero.png" }
+  },
   "backdrops": {
     "garibaldi": {
       "layers": [
