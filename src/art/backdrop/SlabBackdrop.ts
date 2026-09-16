@@ -5,24 +5,35 @@ import type { Backdrop } from "./Backdrop";
 /**
  * Fondale falso-3D alla Prince of Persia 1989.
  *
- * La profondita' viene dall'occlusione e dallo spessore dei volumi, non dalla
- * parallasse: tutto e' in world space (scrollFactor 1 di default).
- * L'indizio piu' forte e' la colonna in primo piano (DEPTH.overFloor): passa
- * davanti al giocatore esattamente come nell'originale.
+ * Tre piani di profondita' chiari, tutti in world space (scrollFactor 1):
+ *   1. Parete di fondo: archi (DEPTH.farBack)
+ *   2. Piano intermedio: lesene piatte (DEPTH.board)
+ *   3. Colonne di sfondo (DEPTH.columns)
+ *   4. Colonna in primo piano, davanti al giocatore (DEPTH.overFloor)
+ *
+ * La profondita' viene dall'occlusione e dalla larghezza della faccia
+ * laterale delle colonne (10 px), non dal movimento dei piani.
  */
 export class SlabBackdrop implements Backdrop {
   build(scene: Phaser.Scene, levelWidth: number): void {
     scene.cameras.main.setBackgroundColor("#000000");
 
-    // Archi nella parete di fondo (occlusione dello sfondo)
+    // Piano 1 — archi nella parete di fondo
     for (let x = 80; x < levelWidth; x += 192) {
       scene.add.image(x, 0, "prop:arch")
         .setOrigin(0, 0)
         .setDepth(DEPTH.farBack);
     }
 
-    // Colonne di sfondo (dietro il giocatore)
-    for (let x = 32; x < levelWidth; x += 128) {
+    // Piano 2 — lesene piatte: piano intermedio tra parete e colonne
+    for (let x = 48; x < levelWidth; x += 96) {
+      scene.add.image(x, 0, "prop:lesena")
+        .setOrigin(0, 0)
+        .setDepth(DEPTH.board);
+    }
+
+    // Piano 3 — colonne di sfondo (dietro il giocatore)
+    for (let x = 20; x < levelWidth; x += 160) {
       scene.add.image(x, 0, "prop:pillar")
         .setOrigin(0, 0)
         .setDepth(DEPTH.columns);
@@ -33,13 +44,13 @@ export class SlabBackdrop implements Backdrop {
       .setOrigin(0, 0)
       .setDepth(DEPTH.props);
 
-    // Pavimento: faccia frontale (sotto il bordo, fino al fondo schermo)
+    // Pavimento: faccia frontale (fino al fondo schermo)
     scene.add.tileSprite(0, GROUND_Y + 4, levelWidth, GAME_H - GROUND_Y - 4, "prop:slab_face")
       .setOrigin(0, 0)
       .setDepth(DEPTH.props);
 
-    // Colonne in primo piano: DAVANTI al giocatore (DEPTH.overFloor)
-    for (let x = 280; x < levelWidth; x += 640) {
+    // Piano 4 — colonne in primo piano: DAVANTI al giocatore (DEPTH.overFloor)
+    for (let x = 260; x < levelWidth; x += 640) {
       scene.add.image(x, 0, "prop:pillar")
         .setOrigin(0, 0)
         .setDepth(DEPTH.overFloor);
@@ -47,6 +58,6 @@ export class SlabBackdrop implements Backdrop {
   }
 
   update(_scrollX: number, _timeMs: number): void {
-    // Nessuna parallasse: i game object seguono la camera con scrollFactor 1.
+    // Nessuna parallasse: tutto segue la camera con scrollFactor 1.
   }
 }
