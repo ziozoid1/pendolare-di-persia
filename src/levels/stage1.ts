@@ -18,7 +18,7 @@ export const STAGE1: StageDef = {
   clockStart: 8 * 60 + 32,
   clockDeadline: 9 * 60,
   patience: 3,
-  backdrop: "stazione",
+  backdrop: "stazione-slab",
   next: "Stage2",
   floor: [{ x: 0, w: WIDTH }],
   entities: [

@@ -1,5 +1,6 @@
 import { makeCanvas, rect, toDataURL, line } from "./pixel";
 import { EGA } from "./palettes";
+import { GROUND_Y } from "../core/constants";
 
 /**
  * Oggetti di scena e fondali cotti a codice. Ogni voce ha una chiave stabile:
@@ -199,6 +200,61 @@ export function bakeLobbyProps(): BakedProp[] {
         rect(ctx, x, y, w, h, EGA.green);
       }
       rect(ctx, 5, 0, 4, 3, "#55aa33");
+    })
+  ];
+}
+
+/**
+ * STAGE 1 (stile falso-3D alla Prince of Persia 1989).
+ * Fondo nero, profondita' per occlusione e spessore dei volumi.
+ */
+export function bakeSlabProps(): BakedProp[] {
+  const FACE_H = 28; // GAME_H(200) - GROUND_Y(168) - slab_top(4)
+
+  return [
+    // Faccia superiore del piano: pietra illuminata dall'alto
+    prop("prop:slab_top", 32, 4, (ctx) => {
+      rect(ctx, 0, 0, 32, 1, EGA.lgray);
+      rect(ctx, 0, 1, 32, 2, "#888888");
+      rect(ctx, 0, 3, 32, 1, EGA.dgray);
+    }),
+
+    // Faccia frontale: corsi di mattoni sfalsati, tre toni di grigio
+    prop("prop:slab_face", 32, FACE_H, (ctx) => {
+      rect(ctx, 0, 0, 32, FACE_H, EGA.dgray);
+      for (let row = 0; row < 4; row++) {
+        const y = row * 9;
+        if (y >= FACE_H) break;
+        const off = row % 2 === 0 ? 0 : 16;
+        rect(ctx, 0, y, 32, 1, "#888888");                                // highlight superiore
+        rect(ctx, off, y + 1, 15, 1, "#888888");                          // faccia alta blocco A
+        rect(ctx, (off + 16) % 32, y + 1, 15, 1, "#888888");             // faccia alta blocco B
+        rect(ctx, 0, Math.min(y + 7, FACE_H - 1), 32, 1, "#333333");     // ombra inferiore
+        rect(ctx, off + 15, y + 1, 1, Math.min(7, FACE_H - y - 1), EGA.black); // giunto verticale A
+      }
+    }),
+
+    // Colonna: faccia frontale (16 px) + faccia laterale destra (4 px, falso-3D)
+    prop("prop:pillar", 20, GROUND_Y, (ctx) => {
+      rect(ctx, 0, 0, 16, GROUND_Y, EGA.dgray);
+      rect(ctx, 0, 0, 1, GROUND_Y, EGA.lgray);          // bordo lit
+      rect(ctx, 0, 0, 16, 1, EGA.lgray);                // capitello top
+      rect(ctx, 0, 1, 16, 2, "#888888");                // capitello corpo
+      rect(ctx, 0, GROUND_Y - 3, 16, 3, "#888888");     // base
+      rect(ctx, 16, 3, 4, GROUND_Y - 6, "#333333");     // faccia laterale destra
+      rect(ctx, 16, 3, 4, 1, EGA.dgray);                // raccordo capitello
+    }),
+
+    // Arco nella parete di fondo: cornice di pietra, apertura nera
+    prop("prop:arch", 64, 96, (ctx) => {
+      rect(ctx, 0, 0, 8, 96, EGA.dgray);                // piediritto sinistro
+      rect(ctx, 0, 0, 1, 96, "#888888");                // bordo lit
+      rect(ctx, 56, 0, 8, 96, EGA.dgray);               // piediritto destro
+      rect(ctx, 0, 0, 64, 10, EGA.dgray);               // architrave
+      rect(ctx, 0, 0, 64, 1, "#888888");                // highlight architrave
+      rect(ctx, 8, 10, 4, 86, "#333333");               // strombatura sinistra
+      rect(ctx, 52, 10, 4, 86, "#333333");              // strombatura destra
+      rect(ctx, 8, 10, 48, 4, "#333333");               // strombatura alta
     })
   ];
 }

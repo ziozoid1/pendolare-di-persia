@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { CLIPS, CLIP_ORDER, animKey, canonicalFrames } from "./clips";
 import { bakeActorSheet, FRAME_H, FRAME_W } from "./bakeActors";
-import { bakeBoard, bakeLobbyProps, bakeSolid, bakeStationProps } from "./bakeProps";
+import { bakeBoard, bakeLobbyProps, bakeSlabProps, bakeSolid, bakeStationProps } from "./bakeProps";
 import { skinFileURL, type SkinManifest } from "./skin";
 import { ACTOR_IDS, type ActorId, type ClipName } from "../core/types";
 import { EGA } from "./palettes";
@@ -69,6 +69,7 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
   const baked = [
     ...bakeStationProps(),
     ...bakeLobbyProps(),
+    ...bakeSlabProps(),
     bakeBoard(true),
     bakeBoard(false)
   ];

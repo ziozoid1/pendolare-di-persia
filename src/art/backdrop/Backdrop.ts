@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { SkinManifest } from "../skin";
 import { ImageBackdrop } from "./ImageBackdrop";
 import { LobbyBackdrop } from "./LobbyBackdrop";
+import { SlabBackdrop } from "./SlabBackdrop";
 import { StationBackdrop } from "./StationBackdrop";
 
 /**
@@ -25,6 +26,8 @@ export function createBackdrop(name: string, skin: SkinManifest | null): Backdro
   switch (name) {
     case "stazione":
       return new StationBackdrop();
+    case "stazione-slab":
+      return new SlabBackdrop();
     case "atrio":
       return new LobbyBackdrop();
     default:
