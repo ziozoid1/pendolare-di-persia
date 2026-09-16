@@ -24,7 +24,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   abstract readonly def: StageDef;
 
   player!: Player;
-  protected hud = new HUD(this);
+  protected hud!: HUD;
   private backdrop!: Backdrop;
   private entities: Entity[] = [];
   private floorGroup!: Phaser.Physics.Arcade.StaticGroup;
@@ -37,7 +37,6 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   private lastSafeX = 0;
   private objective: { ratio: number; label: string } | null = null;
   private restartKey!: Phaser.Input.Keyboard.Key;
-  private confirmKey!: Phaser.Input.Keyboard.Key;
 
   get isPlaying(): boolean {
     return this.state === "play" && this.encounter === null;
@@ -48,6 +47,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   }
 
   create(): void {
+    this.hud = new HUD(this); // istanza fresca ad ogni restart: nessuno stato stantio
     this.state = "play";
     this.clock = this.def.clockStart;
     this.patience = this.def.patience;
@@ -81,9 +81,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.cameras.main.setBounds(0, 0, this.def.width, GAME_H);
     this.cameras.main.setScroll(0, 0);
 
-    const K = Phaser.Input.Keyboard.KeyCodes;
-    this.restartKey = this.input.keyboard!.addKey(K.R);
-    this.confirmKey = this.input.keyboard!.addKey(K.SPACE);
+    this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     this.showStageTitle();
   }
@@ -119,17 +117,14 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.backdrop.update(cam.scrollX, time);
     this.hud.update(dt);
 
-    if (Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart();
+    // R a meta' partita: riavvia subito (JustDown funziona con fisica attiva)
+    if (this.state === "play" && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.scene.start(this.def.key);
       return;
     }
 
-    if (this.state !== "play") {
-      if (this.state === "won" && Phaser.Input.Keyboard.JustDown(this.confirmKey)) {
-        this.scene.start(this.def.next);
-      }
-      return;
-    }
+    // Fine partita: i listener once() in lose() / completeStage() gestiscono le transizioni
+    if (this.state !== "play") return;
     if (this.overlayObjects.length > 0) return; // titolo dello stage ancora a schermo
 
     // orologio
@@ -219,6 +214,8 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.hud.setLaptop(!reason.includes("PORTATILE"));
     this.physics.world.pause();
     this.overlayObjects = showOverlay(this, [reason, "", "R per ricominciare"], "#ff5555");
+    // window.location.reload() garantisce uno stato pulito: nessun residuo di Phaser
+    this.input.keyboard!.once("keydown-R", () => window.location.reload());
   }
 
   completeStage(): void {
@@ -232,5 +229,6 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
       [`${this.def.title} COMPLETATA`, `Ore ${hhmm}.`, "", "spazio per continuare"],
       "#55ff55"
     );
+    this.input.keyboard!.once("keydown-SPACE", () => this.scene.start(this.def.next));
   }
 }

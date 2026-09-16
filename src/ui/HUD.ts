@@ -18,6 +18,7 @@ export class HUD {
 
   create(maxPatience: number): void {
     this.maxPatience = maxPatience;
+    this.pips = []; // scene.restart() distrugge i GameObjects ma non azzera l'array
     const fixed = <T extends Phaser.GameObjects.GameObject>(o: T): T =>
       (o as unknown as Phaser.GameObjects.Image).setScrollFactor(0).setDepth(DEPTH.hud) as unknown as T;
 
@@ -56,7 +57,7 @@ export class HUD {
   }
 
   setPatience(value: number): void {
-    this.pips.forEach((pip, i) => pip.setTexture(i < value ? SOLID.lred : SOLID.dim));
+    this.pips.forEach((pip, i) => pip.setAlpha(i < value ? 1 : 0.2));
   }
 
   setLaptop(has: boolean): void {
