@@ -206,55 +206,87 @@ export function bakeLobbyProps(): BakedProp[] {
 
 /**
  * STAGE 1 (stile falso-3D alla Prince of Persia 1989).
- * Fondo nero, profondita' per occlusione e spessore dei volumi.
+ * Palette calda sabbiosa, colonne con faccia laterale larga, archi profondi.
+ * Nessuna parallasse: tutto in world space (scrollFactor 1 di default).
  */
 export function bakeSlabProps(): BakedProp[] {
   const FACE_H = 28; // GAME_H(200) - GROUND_Y(168) - slab_top(4)
 
+  // Palette pietra calda ispirata a PoP 1989
+  const HI  = "#cccc99"; // highlight (bordo illuminato)
+  const MID = "#887755"; // tono medio della pietra
+  const SHD = "#554433"; // ombra calda
+  const DRK = "#221100"; // ombra profonda / interno arco
+
   return [
     // Faccia superiore del piano: pietra illuminata dall'alto
     prop("prop:slab_top", 32, 4, (ctx) => {
-      rect(ctx, 0, 0, 32, 1, EGA.lgray);
-      rect(ctx, 0, 1, 32, 2, "#888888");
-      rect(ctx, 0, 3, 32, 1, EGA.dgray);
+      rect(ctx, 0, 0, 32, 1, HI);
+      rect(ctx, 0, 1, 32, 2, MID);
+      rect(ctx, 0, 3, 32, 1, SHD);
     }),
 
-    // Faccia frontale: corsi di mattoni sfalsati, tre toni di grigio
+    // Faccia frontale: corsi di blocchi sfalsati, tre toni caldi
     prop("prop:slab_face", 32, FACE_H, (ctx) => {
-      rect(ctx, 0, 0, 32, FACE_H, EGA.dgray);
+      rect(ctx, 0, 0, 32, FACE_H, MID);
       for (let row = 0; row < 4; row++) {
         const y = row * 9;
         if (y >= FACE_H) break;
         const off = row % 2 === 0 ? 0 : 16;
-        rect(ctx, 0, y, 32, 1, "#888888");                                // highlight superiore
-        rect(ctx, off, y + 1, 15, 1, "#888888");                          // faccia alta blocco A
-        rect(ctx, (off + 16) % 32, y + 1, 15, 1, "#888888");             // faccia alta blocco B
-        rect(ctx, 0, Math.min(y + 7, FACE_H - 1), 32, 1, "#333333");     // ombra inferiore
-        rect(ctx, off + 15, y + 1, 1, Math.min(7, FACE_H - y - 1), EGA.black); // giunto verticale A
+        rect(ctx, 0, y, 32, 1, HI);                                              // highlight orizzontale
+        rect(ctx, off, y + 1, 15, 1, HI);                                        // spigolo alto blocco A
+        rect(ctx, (off + 16) % 32, y + 1, 15, 1, HI);                           // spigolo alto blocco B
+        rect(ctx, 0, Math.min(y + 7, FACE_H - 1), 32, 1, DRK);                  // ombra inferiore
+        rect(ctx, off + 15, y + 1, 1, Math.min(7, FACE_H - y - 1), EGA.black);  // giunto verticale
       }
     }),
 
-    // Colonna: faccia frontale (16 px) + faccia laterale destra (4 px, falso-3D)
-    prop("prop:pillar", 20, GROUND_Y, (ctx) => {
-      rect(ctx, 0, 0, 16, GROUND_Y, EGA.dgray);
-      rect(ctx, 0, 0, 1, GROUND_Y, EGA.lgray);          // bordo lit
-      rect(ctx, 0, 0, 16, 1, EGA.lgray);                // capitello top
-      rect(ctx, 0, 1, 16, 2, "#888888");                // capitello corpo
-      rect(ctx, 0, GROUND_Y - 3, 16, 3, "#888888");     // base
-      rect(ctx, 16, 3, 4, GROUND_Y - 6, "#333333");     // faccia laterale destra
-      rect(ctx, 16, 3, 4, 1, EGA.dgray);                // raccordo capitello
+    // Colonna: faccia frontale (16 px) + faccia laterale destra larga (10 px)
+    // La larghezza della faccia laterale e' il segnale di 3D piu' forte.
+    prop("prop:pillar", 26, GROUND_Y, (ctx) => {
+      // Faccia frontale
+      rect(ctx, 0, 0, 16, GROUND_Y, MID);
+      rect(ctx, 0, 0, 1, GROUND_Y, HI);             // bordo sinistro illuminato
+      rect(ctx, 14, 0, 2, GROUND_Y, SHD);           // bordo destro in ombra (gira l'angolo)
+      // Capitello
+      rect(ctx, 0, 0, 16, 1, HI);
+      rect(ctx, 0, 1, 16, 3, MID);
+      rect(ctx, 1, 2, 14, 1, HI);                   // linea orizzontale del capitello
+      // Base
+      rect(ctx, 0, GROUND_Y - 4, 16, 1, HI);
+      rect(ctx, 0, GROUND_Y - 3, 16, 3, MID);
+      // Faccia laterale destra (10 px): molto piu' scura, da' la sensazione di volume
+      rect(ctx, 16, 0, 10, GROUND_Y, DRK);
+      rect(ctx, 16, 0, 10, 4, SHD);                 // raccordo capitello lato
+      rect(ctx, 16, GROUND_Y - 4, 10, 4, SHD);      // raccordo base lato
     }),
 
-    // Arco nella parete di fondo: cornice di pietra, apertura nera
+    // Arco nella parete di fondo con strombatura profonda (prospettiva forzata)
     prop("prop:arch", 64, 96, (ctx) => {
-      rect(ctx, 0, 0, 8, 96, EGA.dgray);                // piediritto sinistro
-      rect(ctx, 0, 0, 1, 96, "#888888");                // bordo lit
-      rect(ctx, 56, 0, 8, 96, EGA.dgray);               // piediritto destro
-      rect(ctx, 0, 0, 64, 10, EGA.dgray);               // architrave
-      rect(ctx, 0, 0, 64, 1, "#888888");                // highlight architrave
-      rect(ctx, 8, 10, 4, 86, "#333333");               // strombatura sinistra
-      rect(ctx, 52, 10, 4, 86, "#333333");              // strombatura destra
-      rect(ctx, 8, 10, 48, 4, "#333333");               // strombatura alta
+      // Piediritti laterali (visibili in luce)
+      rect(ctx, 0, 0, 9, 96, MID);
+      rect(ctx, 0, 0, 1, 96, HI);                   // bordo lit
+      rect(ctx, 55, 0, 9, 96, MID);
+      // Architrave
+      rect(ctx, 0, 0, 64, 11, MID);
+      rect(ctx, 0, 0, 64, 1, HI);
+      // Strombatura sinistra: parete laterale che si vede dentro l'arco
+      // Va da x=9 a x=15, piu' larga in alto (prospettiva verso il fondo)
+      rect(ctx, 9, 11, 6, 85, SHD);
+      rect(ctx, 9, 11, 6, 4, DRK);                  // angolo interno: piu' scuro
+      // Strombatura destra (speculare, lato ombra: piu' scura)
+      rect(ctx, 49, 11, 6, 85, DRK);
+      // Strombatura alta (soffitto interno dell'arco)
+      rect(ctx, 9, 11, 46, 5, DRK);
+      // Interno: nero profondo, nessun dettaglio (occhio cade nel vuoto)
+      rect(ctx, 15, 16, 34, 80, EGA.black);
+    }),
+
+    // Lesena: pilastro piatto addossato alla parete, piano intermedio di profondita'
+    prop("prop:lesena", 10, GROUND_Y, (ctx) => {
+      rect(ctx, 0, 0, 8, GROUND_Y, SHD);
+      rect(ctx, 0, 0, 1, GROUND_Y, MID);            // bordo lit
+      rect(ctx, 8, 2, 2, GROUND_Y - 4, DRK);        // spigolo laterale
     })
   ];
 }
