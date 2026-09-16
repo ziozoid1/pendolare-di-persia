@@ -1,6 +1,6 @@
 import { makeCanvas, rect, toDataURL, line } from "./pixel";
 import { EGA } from "./palettes";
-import { GROUND_Y } from "../core/constants";
+import { GAME_H, GROUND_Y } from "../core/constants";
 
 /**
  * Oggetti di scena e fondali cotti a codice. Ogni voce ha una chiave stabile:
@@ -288,5 +288,185 @@ export function bakeSlabProps(): BakedProp[] {
       rect(ctx, 0, 0, 1, GROUND_Y, MID);            // bordo lit
       rect(ctx, 8, 2, 2, GROUND_Y - 4, DRK);        // spigolo laterale
     })
+  ];
+}
+
+/**
+ * STAGE 1 v2 - Piazza Garibaldi, stazione di mattoni.
+ * Layout verticale (dall'alto): cielo+catenaria (38px), cornice cemento (8px),
+ * parete mattoni (74px), pilastri banchina (48px), bordo+striscia gialla (8px),
+ * massicciata+binari (24px).
+ */
+export function bakeGaribaldiProps(): BakedProp[] {
+  // Cielo freddo
+  const SKY_HI  = "#c0d0e0";
+  const SKY_MID = "#96a8bc";
+  const WIRE    = "#3a4048";
+  const INSUL   = "#8888a0";
+
+  // Mattoni caldi (tre toni esatti come da spec)
+  const BR_HI  = "#c88850";
+  const BR_MID = "#9a5c2e";
+  const BR_DRK = "#5a3018";
+
+  // Cemento / banchina
+  const CEM_HI  = "#d0ccc4";
+  const CEM_MID = "#a8a49c";
+  const CEM_SHD = "#787068";
+  const PLAT_HI = "#e0dcc8";
+  const PLAT_MID = "#c8c4b0";
+  const YELLOW   = "#f0c000";
+  const PLAT_SHD = "#a09888";
+  const SHADOW   = "#1e1814";
+
+  // Binari
+  const BALLAST  = "#504840";
+  const GRAVEL_D = "#3a3430";
+  const GRAVEL_L = "#686058";
+  const SLEEPER  = "#3c2818";
+  const RAIL     = "#787080";
+  const RAIL_HI  = "#9898b0";
+
+  // Treno
+  const TR_BODY  = "#2a3a52";
+  const TR_TOP   = "#1e2a3c";
+  const TR_WIN   = "#7098b0";
+  const TR_DOOR  = "#1a2032";
+  const TR_UNDER = "#181828";
+
+  const TRACK_H = GAME_H - GROUND_Y - 8; // 24 px
+
+  return [
+    // --- Cielo + catenaria (tileable ogni 80 px, y 0-38) ---
+    prop("prop:catenary", 80, 38, (ctx) => {
+      rect(ctx, 0, 0, 80, 22, SKY_HI);
+      rect(ctx, 0, 22, 80, 16, SKY_MID);
+      // Palo: x 38-40
+      rect(ctx, 38, 0, 3, 38, WIRE);
+      // Traversa sommitale
+      rect(ctx, 30, 0, 20, 4, WIRE);
+      // Filo portante (y 10) e di contatto (y 26)
+      rect(ctx, 0, 10, 80, 1, WIRE);
+      rect(ctx, 0, 26, 80, 1, "#505868");
+      // Pendolo dal filo portante a quello di contatto
+      rect(ctx, 40, 10, 1, 16, "#505868");
+      // Isolatore
+      rect(ctx, 37, 8, 7, 4, INSUL);
+    }),
+
+    // --- Cornice di cemento (fascia, y 38-46) ---
+    prop("prop:wall_cornice", 32, 8, (ctx) => {
+      rect(ctx, 0, 0, 32, 2, CEM_HI);
+      rect(ctx, 0, 2, 32, 4, CEM_MID);
+      rect(ctx, 0, 6, 32, 2, CEM_SHD);
+    }),
+
+    // --- Parete di mattoni (tileable, 3 toni, y 46-120) ---
+    prop("prop:brick_wall", 32, 80, (ctx) => {
+      rect(ctx, 0, 0, 32, 80, BR_MID);
+      for (let row = 0; row < 10; row++) {
+        const y = row * 8;
+        if (y >= 80) break;
+        const off = row % 2 === 0 ? 0 : 16;
+        rect(ctx, 0, y, 32, 1, BR_DRK);                          // giunto orizz.
+        rect(ctx, off, y + 1, 14, 6, BR_HI);                     // mattone A
+        rect(ctx, (off + 16) % 32, y + 1, 14, 6, BR_HI);        // mattone B
+        rect(ctx, off + 14, y + 1, 2, 6, BR_DRK);               // giunto vert. A
+        rect(ctx, (off + 30) % 32, y + 1, 2, 6, BR_DRK);        // giunto vert. B
+      }
+    }),
+
+    // --- Cartellone pubblicitario (frame + manifesto) ---
+    prop("prop:billboard", 68, 52, (ctx) => {
+      rect(ctx, 0, 0, 68, 52, BR_DRK);           // cornice scura
+      rect(ctx, 3, 3, 62, 46, "#d4b060");         // sfondo manifesto caldo
+      rect(ctx, 3, 3, 62, 14, "#3878b0");         // cielo stilizzato azzurro
+      rect(ctx, 3, 17, 62, 2, "#e08030");         // orizzonte caldo
+      rect(ctx, 44, 4, 12, 12, "#ffe030");        // disco sole
+      rect(ctx, 46, 6, 8, 8, "#fff080");          // centro sole brillante
+      rect(ctx, 8, 10, 10, 20, "#204090");        // sagoma edificio A
+      rect(ctx, 20, 14, 6, 16, "#204090");        // sagoma edificio B
+      rect(ctx, 3, 40, 62, 1, "#c09050");         // separatore
+      rect(ctx, 6, 42, 44, 6, "#b88840");         // banda testo-finto
+    }),
+
+    // --- Lampada sopra il cartellone ---
+    prop("prop:billboard_lamp", 10, 8, (ctx) => {
+      rect(ctx, 4, 0, 2, 4, WIRE);               // staffa
+      rect(ctx, 2, 4, 6, 4, "#fff8a0");          // bulbo
+      rect(ctx, 3, 5, 4, 2, "#ffffff");           // punto luminoso
+    }),
+
+    // --- Cono di luce (usato con setAlpha, NON tint) ---
+    prop("prop:light_cone", 22, 32, (ctx) => {
+      for (let y = 0; y < 32; y++) {
+        const w = Math.round(2 + (y / 31) * 18);
+        const x = Math.round((22 - w) / 2);
+        rect(ctx, x, y, w, 1, "#fff8c0");
+      }
+    }),
+
+    // --- Pilastri e zona in ombra banchina (tileable ogni 48 px, y 120-168) ---
+    prop("prop:platform_pillar", 48, 48, (ctx) => {
+      rect(ctx, 0, 0, 48, 48, SHADOW);           // fondo ombra tettoia
+      rect(ctx, 20, 0, 8, 48, "#3a3028");        // corpo pilastro
+      rect(ctx, 20, 0, 2, 48, "#4a4038");        // spigolo lit
+      rect(ctx, 26, 0, 2, 48, "#221812");        // spigolo in ombra
+      rect(ctx, 16, 20, 16, 3, "#302820");       // correa centrale
+    }),
+
+    // --- Bordo banchina con striscia gialla di sicurezza (y 168) ---
+    prop("prop:platform_edge", 32, 8, (ctx) => {
+      rect(ctx, 0, 0, 32, 1, PLAT_HI);          // spigolo superiore lit
+      rect(ctx, 0, 1, 32, 3, PLAT_MID);         // lastra
+      rect(ctx, 0, 4, 32, 1, YELLOW);            // striscia gialla di sicurezza
+      rect(ctx, 0, 5, 32, 3, PLAT_SHD);         // faccia frontale in ombra
+    }),
+
+    // --- Massicciata, traversine e rotaie (tileable ogni 64 px) ---
+    prop("prop:track_bed", 64, TRACK_H, (ctx) => {
+      rect(ctx, 0, 0, 64, TRACK_H, BALLAST);
+      // Gravel texture: pietre scure e chiare
+      for (const [x, y] of [[4,2],[14,10],[28,15],[44,6],[56,19],[8,20],[36,2]] as Array<[number,number]>)
+        rect(ctx, x, y, 2, 2, GRAVEL_D);
+      for (const [x, y] of [[10,6],[22,13],[38,18],[52,9],[6,17],[30,5]] as Array<[number,number]>)
+        rect(ctx, x, y, 2, 2, GRAVEL_L);
+      // Traversine ogni 8 px (4 px di larghezza)
+      for (let i = 0; i < 8; i++) {
+        rect(ctx, i * 8 + 1, 4, 5, TRACK_H - 8, SLEEPER);
+        rect(ctx, i * 8 + 1, 4, 5, 1, "#4a3822");
+      }
+      // Rotaia superiore e inferiore
+      rect(ctx, 0, 3, 64, 2, RAIL);
+      rect(ctx, 0, 3, 64, 1, RAIL_HI);
+      rect(ctx, 0, TRACK_H - 6, 64, 2, RAIL);
+      rect(ctx, 0, TRACK_H - 6, 64, 1, RAIL_HI);
+    }),
+
+    // --- Treno stile Regionale (per zona binari, depth DEPTH.trains) ---
+    prop("prop:garibaldi_train", 140, 16, (ctx) => {
+      rect(ctx, 0, 0, 140, 16, TR_BODY);
+      rect(ctx, 0, 0, 140, 3, TR_TOP);           // fascia superiore
+      rect(ctx, 0, 13, 140, 3, TR_UNDER);        // telaio inferiore
+      // Finestrini: 2 carrozze × 3 finestre
+      for (let car = 0; car < 2; car++) {
+        const cx = car * 70 + 5;
+        for (let w = 0; w < 3; w++) {
+          rect(ctx, cx + w * 22, 4, 16, 7, TR_WIN);
+          rect(ctx, cx + w * 22, 4, 16, 1, "#90b8d0");
+        }
+        // Porte tra le finestre
+        rect(ctx, cx + 16, 3, 3, 9, TR_DOOR);
+        rect(ctx, cx + 38, 3, 3, 9, TR_DOOR);
+      }
+      // Giunzione carrozze
+      rect(ctx, 68, 2, 4, 12, TR_UNDER);
+      rect(ctx, 69, 0, 2, 16, TR_TOP);
+      // Striscia orizzontale caratteristica
+      rect(ctx, 0, 11, 140, 1, "#3a6090");
+      // Testata anteriore e posteriore
+      rect(ctx, 0, 0, 4, 16, TR_TOP);
+      rect(ctx, 136, 0, 4, 16, TR_TOP);
+    }),
   ];
 }
