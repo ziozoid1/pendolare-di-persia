@@ -29,6 +29,15 @@ export class TitleScene extends Phaser.Scene {
     const start = centerText(this, GAME_H - 26, "premi spazio", "#55ff55");
     this.tweens.add({ targets: start, alpha: 0.2, duration: 700, yoyo: true, repeat: -1 });
 
-    this.input.keyboard!.once("keydown-SPACE", () => this.scene.start("Stage1"));
+    // ?stage=N (1-3): salta direttamente a quello stage in sviluppo
+    const stageParam = new URLSearchParams(window.location.search).get("stage");
+    const stageN = stageParam ? parseInt(stageParam, 10) : NaN;
+    const targetScene = stageN >= 1 && stageN <= 3 ? `Stage${stageN}` : "Stage1";
+
+    if (stageN >= 1 && stageN <= 3) {
+      centerText(this, GAME_H - 8, `DEV: stage ${stageN}`, "#ff8800").setAlpha(0.7);
+    }
+
+    this.input.keyboard!.once("keydown-SPACE", () => this.scene.start(targetScene));
   }
 }
