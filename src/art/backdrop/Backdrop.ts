@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { SkinManifest } from "../skin";
+import { GaribaldiBackdrop } from "./GaribaldiBackdrop";
 import { ImageBackdrop } from "./ImageBackdrop";
 import { LobbyBackdrop } from "./LobbyBackdrop";
 import { SlabBackdrop } from "./SlabBackdrop";
@@ -24,6 +25,8 @@ export function createBackdrop(name: string, skin: SkinManifest | null): Backdro
   if (fromSkin) return new ImageBackdrop(fromSkin);
 
   switch (name) {
+    case "garibaldi":
+      return new GaribaldiBackdrop();
     case "stazione":
       return new StationBackdrop();
     case "stazione-slab":
