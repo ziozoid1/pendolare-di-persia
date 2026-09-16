@@ -7,9 +7,15 @@ import type { Backdrop } from "./Backdrop";
  * Fondale costruito dalle immagini dichiarate in skin.json.
  * Un livello con tile:true diventa una TileSprite che scorre in parallasse;
  * gli altri sono immagini ancorate al mondo.
+ * Se un layer dichiara speed (px/s), si sposta anche autonomamente —
+ * utile per i treni che attraversano la scena indipendentemente dalla camera.
  */
 export class ImageBackdrop implements Backdrop {
-  private tiles: Array<{ sprite: Phaser.GameObjects.TileSprite; factor: number }> = [];
+  private tiles: Array<{
+    sprite: Phaser.GameObjects.TileSprite;
+    factor: number;
+    speed: number;
+  }> = [];
 
   constructor(private readonly skin: BackdropSkin) {}
 
@@ -26,7 +32,7 @@ export class ImageBackdrop implements Backdrop {
           .setOrigin(0, 0)
           .setScrollFactor(0)
           .setDepth(depth);
-        this.tiles.push({ sprite, factor });
+        this.tiles.push({ sprite, factor, speed: layer.speed ?? 0 });
       } else {
         scene.add.image(0, y, layer.image)
           .setOrigin(0, 0)
@@ -37,7 +43,10 @@ export class ImageBackdrop implements Backdrop {
     void levelWidth;
   }
 
-  update(scrollX: number, _timeMs: number): void {
-    for (const t of this.tiles) t.sprite.tilePositionX = scrollX * t.factor;
+  update(scrollX: number, timeMs: number): void {
+    const t = timeMs / 1000;
+    for (const layer of this.tiles) {
+      layer.sprite.tilePositionX = scrollX * layer.factor + t * layer.speed;
+    }
   }
 }
