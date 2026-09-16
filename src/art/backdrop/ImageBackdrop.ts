@@ -15,9 +15,7 @@ export class ImageBackdrop implements Backdrop {
     sprite: Phaser.GameObjects.TileSprite;
     factor: number;
     speed: number;
-    offset: number;
   }> = [];
-  private prevTimeMs = 0;
 
   constructor(private readonly skin: BackdropSkin) {}
 
@@ -34,7 +32,7 @@ export class ImageBackdrop implements Backdrop {
           .setOrigin(0, 0)
           .setScrollFactor(0)
           .setDepth(depth);
-        this.tiles.push({ sprite, factor, speed: layer.speed ?? 0, offset: 0 });
+        this.tiles.push({ sprite, factor, speed: layer.speed ?? 0 });
       } else {
         scene.add.image(0, y, layer.image)
           .setOrigin(0, 0)
@@ -46,12 +44,9 @@ export class ImageBackdrop implements Backdrop {
   }
 
   update(scrollX: number, timeMs: number): void {
-    const dt = this.prevTimeMs > 0 ? (timeMs - this.prevTimeMs) / 1000 : 0;
-    this.prevTimeMs = timeMs;
-
-    for (const t of this.tiles) {
-      t.offset += t.speed * dt;
-      t.sprite.tilePositionX = scrollX * t.factor + t.offset;
+    const t = timeMs / 1000;
+    for (const layer of this.tiles) {
+      layer.sprite.tilePositionX = scrollX * layer.factor + t * layer.speed;
     }
   }
 }
