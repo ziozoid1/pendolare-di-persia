@@ -214,8 +214,8 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.hud.setLaptop(!reason.includes("PORTATILE"));
     this.physics.world.pause();
     this.overlayObjects = showOverlay(this, [reason, "", "R per ricominciare"], "#ff5555");
-    // once() funziona anche con la fisica in pausa, a differenza di JustDown
-    this.input.keyboard!.once("keydown-R", () => this.scene.start(this.def.key));
+    // window.location.reload() garantisce uno stato pulito: nessun residuo di Phaser
+    this.input.keyboard!.once("keydown-R", () => window.location.reload());
   }
 
   completeStage(): void {
