@@ -99,6 +99,19 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
   }
 }
 
+/**
+ * Carica solo le immagini dei fondali dichiarate da un manifest.
+ * Usato per le skin per-stage: gli attori restano quelli della skin globale.
+ */
+export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): void {
+  if (!skin.backdrops) return;
+  for (const bd of Object.values(skin.backdrops)) {
+    for (const layer of bd.layers) {
+      scene.load.image(layer.image, skinFileURL(skin.name, layer.image));
+    }
+  }
+}
+
 /** Registra un'animazione Phaser per ogni clip di ogni attore. */
 export function registerActorAnims(scene: Phaser.Scene): void {
   for (const id of ACTOR_IDS) {

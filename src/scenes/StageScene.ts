@@ -57,8 +57,12 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.lastSafeX = this.def.startX;
     this.objective = null;
 
-    const skin = (this.registry.get("skin") as SkinManifest | null) ?? null;
-    this.backdrop = createBackdrop(this.def.backdrop, skin);
+    // La skin per il fondale: se lo stage ha una skin propria la usa,
+    // altrimenti cade sulla skin globale (o null → procedurale).
+    const stageSkin: SkinManifest | null = this.def.skin
+      ? (this.registry.get(`skin:manifest:${this.def.skin}`) ?? null)
+      : (this.registry.get("skin") ?? null);
+    this.backdrop = createBackdrop(this.def.backdrop, stageSkin);
     this.backdrop.build(this, this.def.width);
 
     this.physics.world.setBounds(0, 0, this.def.width, GAME_H + 260);

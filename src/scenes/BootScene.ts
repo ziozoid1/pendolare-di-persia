@@ -1,18 +1,22 @@
 import Phaser from "phaser";
-import { queueAssets, registerActorAnims } from "../art/atlas";
+import { queueAssets, queueSkinBackdrops, registerActorAnims } from "../art/atlas";
 import { currentSkinName, skinFileURL, type SkinManifest } from "../art/skin";
 import { centerText } from "../ui/text";
+import { ALL_STAGES } from "../levels";
 
 const MANIFEST_KEY = "skin:manifest";
+const perStageKey = (name: string) => `skin:manifest:${name}`;
 
 /**
  * Due fasi di caricamento.
- * 1) preload: solo lo skin.json, se e' stato chiesto uno skin con ?skin=nome.
- * 2) create: si sa cosa e' sovrascritto, quindi si cuoce il resto dal rig e
- *    si mette tutto in coda in un secondo giro di loader.
+ * 1) preload: skin.json globale + i manifest delle skin per-stage dichiarate
+ *    negli stage (StageDef.skin).
+ * 2) create: si sa cosa e' sovrascritto → si cuoce il resto dal rig, si
+ *    caricano le immagini dei fondali per-stage, si parte.
  *
- * Il punto: sheet cotti dal rig e PNG esterni passano dalla stessa coda. Per
- * il gioco sono la stessa cosa.
+ * Sheet cotti dal rig e PNG esterni passano dalla stessa coda. Per il gioco
+ * sono la stessa cosa. Gli attori vengono sempre dalla skin globale; le skin
+ * per-stage sovrascrivono solo il fondale del loro stage.
  */
 export class BootScene extends Phaser.Scene {
   private skinName: string | null = null;
@@ -24,25 +28,47 @@ export class BootScene extends Phaser.Scene {
   preload(): void {
     centerText(this, 96, "CARICAMENTO", "#aaaaaa");
     this.skinName = currentSkinName();
-    if (!this.skinName) return;
+    if (this.skinName) {
+      this.load.json(MANIFEST_KEY, skinFileURL(this.skinName, "skin.json"));
+      this.load.once("loaderror", () => {
+        console.warn(`skin "${this.skinName}" non trovato: si usa la grafica procedurale`);
+        this.skinName = null;
+      });
+    }
 
-    this.load.json(MANIFEST_KEY, skinFileURL(this.skinName, "skin.json"));
-    this.load.once("loaderror", () => {
-      console.warn(`skin "${this.skinName}" non trovato: si usa la grafica procedurale`);
-      this.skinName = null;
-    });
+    // Pre-carica i manifest delle skin per-stage (quelle diverse dalla globale)
+    const perStageNames = new Set(
+      ALL_STAGES.map(s => s.skin).filter((s): s is string => !!s && s !== this.skinName)
+    );
+    for (const name of perStageNames) {
+      this.load.json(perStageKey(name), skinFileURL(name, "skin.json"));
+    }
   }
 
   create(): void {
     let skin: SkinManifest | null = null;
     if (this.skinName && this.cache.json.exists(MANIFEST_KEY)) {
       skin = this.cache.json.get(MANIFEST_KEY) as SkinManifest;
-      // il nome nel manifest deve combaciare con la cartella
       skin = { ...skin, name: skin.name ?? this.skinName };
     }
     this.registry.set("skin", skin);
 
     queueAssets(this, skin);
+
+    // Registra le skin per-stage e accoda le loro immagini di fondale
+    const perStageNames = new Set(
+      ALL_STAGES.map(s => s.skin).filter((s): s is string => !!s && s !== this.skinName)
+    );
+    for (const name of perStageNames) {
+      const key = perStageKey(name);
+      if (this.cache.json.exists(key)) {
+        const raw = this.cache.json.get(key) as SkinManifest;
+        const manifest: SkinManifest = { ...raw, name: raw.name ?? name };
+        this.registry.set(key, manifest);
+        queueSkinBackdrops(this, manifest);
+      }
+    }
+
     this.load.once("complete", () => {
       registerActorAnims(this);
       this.scene.start("Title");
