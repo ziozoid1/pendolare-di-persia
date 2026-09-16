@@ -23,6 +23,7 @@ export const STAGE2: StageDef = {
   clockDeadline: 9 * 60 + 10,
   patience: 3,
   backdrop: "centro-direzionale",
+  skin: "centro-direzionale",
   next: "Stage3",
   floor: [
     { x: 0, w: 400 },

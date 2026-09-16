@@ -48,4 +48,6 @@ export interface StageDef {
   backdrop: string;
   /** Scene Phaser da avviare al completamento. */
   next: string;
+  /** Skin da usare per il fondale di questo stage (sovrascrive la skin globale). */
+  skin?: string;
 }

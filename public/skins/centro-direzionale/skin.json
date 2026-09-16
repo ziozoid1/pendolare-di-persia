@@ -1,0 +1,14 @@
+{
+  "name": "centro-direzionale",
+  "actors": {
+    "hero": { "image": "hero.png" }
+  },
+  "backdrops": {
+    "centro-direzionale": {
+      "layers": [
+        { "image": "citta.png",  "y": 0,   "height": 142, "scrollFactor": 0.45, "tile": true },
+        { "image": "piazza.png", "y": 139, "height": 61,  "scrollFactor": 1,    "tile": true }
+      ]
+    }
+  }
+}
