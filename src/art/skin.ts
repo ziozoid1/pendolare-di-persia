@@ -50,10 +50,15 @@ export interface SkinManifest {
   backdrops?: Record<string, BackdropSkin>;
 }
 
-/** Lo skin si scegle in URL: ?skin=foto-napoli. Comodo per confrontare stili. */
+/**
+ * Lo skin si sceglie in URL: ?skin=nome. Se assente, parte garibaldi2.
+ * Con ?skin= (vuoto) si torna al fondale procedurale.
+ */
 export function currentSkinName(): string | null {
-  const q = new URLSearchParams(window.location.search).get("skin");
-  return q && q.trim() !== "" ? q.trim() : null;
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has("skin")) return "garibaldi2";
+  const q = params.get("skin")!.trim();
+  return q !== "" ? q : null;
 }
 
 export function skinFileURL(skin: string, file: string): string {
