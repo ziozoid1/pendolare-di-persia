@@ -119,7 +119,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
 
     // R a meta' partita: riavvia subito (JustDown funziona con fisica attiva)
     if (this.state === "play" && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart();
+      this.scene.start(this.def.key);
       return;
     }
 
@@ -215,7 +215,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.physics.world.pause();
     this.overlayObjects = showOverlay(this, [reason, "", "R per ricominciare"], "#ff5555");
     // once() funziona anche con la fisica in pausa, a differenza di JustDown
-    this.input.keyboard!.once("keydown-R", () => this.scene.restart());
+    this.input.keyboard!.once("keydown-R", () => this.scene.start(this.def.key));
   }
 
   completeStage(): void {
