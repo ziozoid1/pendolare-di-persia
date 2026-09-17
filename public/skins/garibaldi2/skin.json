@@ -3,7 +3,8 @@
   "actors": {
     "hero":    { "image": "hero.png" },
     "seller":  { "image": "seller.png" },
-    "tourist": { "image": "tourist.png" }
+    "tourist": { "image": "tourist.png" },
+    "thief":   { "image": "thief.png" }
   },
   "backdrops": {
     "garibaldi": {
