@@ -13,7 +13,7 @@ export class TitleScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#101028");
 
     centerText(this, 34, "IL PENDOLARE DI PERSIA", "#ffff55");
-    centerText(this, 50, "TECNU-CARE  \u2022  Torre Saverio, 32\u00b0 piano", "#aaaaaa");
+    centerText(this, 50, "TECNU-CARE  \u2022  Torre Valerio, 32\u00b0 piano", "#aaaaaa");
 
     // il protagonista cammina sul posto: e' sempre lo stesso rig
     const src = actorSource("hero");

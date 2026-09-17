@@ -9,7 +9,7 @@ import type { StageDef } from "../core/types";
 export const STAGE3: StageDef = {
   key: "Stage3",
   title: "GLI ASCENSORI",
-  subtitle: "Atrio Torre Saverio, ore 9:02",
+  subtitle: "Atrio Torre Valerio, ore 9:02",
   width: GAME_W,
   startX: 20,
   clockStart: 9 * 60 + 2,
