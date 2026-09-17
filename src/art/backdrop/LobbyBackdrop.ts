@@ -3,7 +3,7 @@ import { DEPTH, GAME_H, GAME_W, GROUND_Y } from "../../core/constants";
 import type { Backdrop } from "./Backdrop";
 
 /**
- * Atrio della Torre Saverio. Una sola schermata, quindi niente parallasse:
+ * Atrio della Torre Valerio. Una sola schermata, quindi niente parallasse:
  * la profondita' la danno il soffitto illuminato e il marmo della parete.
  */
 export class LobbyBackdrop implements Backdrop {

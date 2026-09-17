@@ -4,7 +4,7 @@
 
 Platform a schermate fisse in stile Prince of Persia 1989. Un impiegato della
 TECNU-CARE deve arrivare dal treno a Piazza Garibaldi alla propria postazione
-al 32esimo piano della Torre Saverio, al Centro Direzionale di Napoli.
+al 32esimo piano della Torre Valerio, al Centro Direzionale di Napoli.
 
 Vite + TypeScript + Phaser 4. Risoluzione interna 320x200, palette EGA a 16
 colori, camera che salta di una schermata alla volta.

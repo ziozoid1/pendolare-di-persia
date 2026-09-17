@@ -121,7 +121,7 @@ export function bakeBoard(blink: boolean): BakedProp {
 }
 
 /**
- * STAGE 3 - atrio della Torre Saverio.
+ * STAGE 3 - atrio della Torre Valerio.
  * Marmo freddo, luci al soffitto, due porte d'ascensore.
  */
 export function bakeLobbyProps(): BakedProp[] {
