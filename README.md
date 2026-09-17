@@ -1,6 +1,8 @@
 # Il Pendolare di Persia
 
-![Screenshot del gioco: il protagonista sulla banchina di Napoli Centrale](https://github.com/user-attachments/assets/03fdda0a-6caf-43bb-bb01-5ac0b96b6def)
+![Schermata titolo con menu](https://github.com/user-attachments/assets/8592df8a-3a66-419b-ad30-e580202e41e6)
+
+![Screenshot in-game: il protagonista sulla banchina di Napoli Centrale](https://github.com/user-attachments/assets/03fdda0a-6caf-43bb-bb01-5ac0b96b6def)
 
 Platform a schermate fisse in stile Prince of Persia 1989. Un impiegato della
 TECNU-CARE deve arrivare dal treno a Piazza Garibaldi alla propria postazione
