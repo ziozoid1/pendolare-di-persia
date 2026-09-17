@@ -1,52 +1,31 @@
-# Skin "garibaldi2" - stazione di Piazza Garibaldi
+# Fondale del Centro Direzionale (stage 2)
 
-Ricomposta dall'immagine di riferimento alla risoluzione del gioco, senza
-ridisegnare: la scena e' stata ritagliata, scalata e divisa in tre piani.
+Ricavato dall'immagine di riferimento, scalata a 303x200. I passanti disegnati
+hanno i piedi a y=568 nell'originale: a questa scala quella quota cade
+esattamente su GROUND_Y=168, quindi il protagonista cammina dove cammina la
+gente nel disegno.
 
-## Come e' fatta
-
-L'originale e' 1072x992 e contiene due cose: la scena della stazione in alto e
-il convoglio su fondo magenta in basso. La scena e' stata tagliata a y=530,
-scartando il livello di servizio sotto i binari che non entra in 200 px, e
-scalata a **405x200**. A quella scala la banchina cade esattamente a y=168, che
-e' il `GROUND_Y` del gioco: i piedi del protagonista poggiano dove devono.
+Due piani, tagliati dove i palazzi incontrano le fioriere:
 
 | file | y | altezza | scorrimento |
 |------|---|---------|-------------|
-| `fondo.png` | 0 | 168 | 0.35, lontano |
-| `treni.png` | 104 | 47 | 0.6 + velocita' 9 px/s |
-| `parete.png` | 0 | 200 | 1, ancorato |
+| `citta.png` | 0 | 142 | 0.45, la citta' lontana scorre piu' lenta |
+| `piazza.png` | 139 | 61 | 1, ancorata al mondo |
 
-`parete.png` e' la scena completa (muro, cartellone, banchina, binari) con due
-**aperture trasparenti** dove nell'originale si vede fuori: e' da li' che si
-intravede il convoglio che passa. `fondo.png` non e' la scena intera ma solo il
-contenuto di un'apertura, ripetuto: se contenesse anche il muro, scorrendo in
-parallasse comparirebbero mattoni dentro le aperture.
+Il piano basso si sovrappone di 3 px a quello alto, cosi' la parallasse non
+apre una fessura sul taglio.
 
-Il convoglio viene dal fondo magenta dell'originale, scontornato con una soglia
-sul magenta piu' una correzione dell'alone rosato sui bordi.
+`hero.png` e' lo stesso foglio dello skin garibaldi2: va replicato qui perche'
+ogni skin e' autonomo.
 
-## Cosa e' stato ridisegnato
+## Nota sul gatto e sul topo
 
-Tre elementi sono stati rifatti a risoluzione di gioco, quindi sono nitidi e in
-italiano:
+Sono ancora cotti dentro `piazza.png`. Quando faremo gli attori di fondale
+animati vanno tolti da li' e rifatti come sprite a se', altrimenti si vedranno
+doppi: uno fermo e uno in movimento.
 
-- **Il cartellone** aveva il pannello vuoto: contiene ora la figura che indica,
-  la scarpa e la scritta SCARPE PEPPISH.
-- **Il tabellone partenze** diceva DEPARTURES con testo illeggibile: ora e'
-  PARTENZE con Napoli, Salerno e Caserta in ritardo.
-- **Il cartello di stazione** blu con bordo bianco, che nell'originale non
-  c'era.
+## Limite noto
 
-## Limiti noti
-
-La parete si ripete ogni 405 px, cioe' poco piu' di una schermata: con la
-camera che salta di 320 px alla volta, il tabellone partenze a volte cade a
-cavallo del bordo dello schermo. Per evitarlo servirebbe una parete larga 640
-con gli elementi distribuiti diversamente.
-
-## Rigenerare
-
-`genera-stazione.py` ricostruisce i tre piani dall'immagine sorgente. In cima
-ci sono le coordinate misurate sull'originale: `GROUND_SRC` (dove poggiano i
-piedi), `APERTURE` (le finestre nel muro) e `TRENO_SRC` (la fascia dei treni).
+Il fondale si ripete ogni 303 px, cioe' poco meno di una schermata. Su uno
+stage largo 1920 si ripete sei volte e mezzo, e i due lampioni ai lati sono
+l'elemento che si nota di piu'.
