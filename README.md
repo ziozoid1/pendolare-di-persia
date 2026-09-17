@@ -20,6 +20,13 @@ colori, camera che salta di una schermata alla volta.
 sottocartella, quindi GitHub Pages, Netlify o Vercel funzionano senza
 configurazione.
 
+## Parametri di sviluppo
+
+Aggiungere `?stage=N` all'URL per saltare direttamente a uno stage (1–3) senza
+passare dalla schermata titolo:
+
+    http://localhost:5173/?stage=2
+
 ## Comandi di gioco
 
 Frecce per muoversi, shift per correre, su o spazio per saltare, giu' per
