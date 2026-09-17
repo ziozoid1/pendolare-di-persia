@@ -13,6 +13,7 @@ export class HUD {
   private messageTimer = 0;
   private laptop!: Phaser.GameObjects.Image;
   private maxPatience = 3;
+  private muteLabel!: Phaser.GameObjects.Text;
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -44,8 +45,15 @@ export class HUD {
     );
     this.screenLabel = fixed(pixelText(this.scene, 240, 12, "", "#6a6a80", 8));
 
+    this.muteLabel = fixed(pixelText(this.scene, 216, 3, "MUTO", "#ff5555"));
+    this.muteLabel.setVisible(false);
+
     this.message = fixed(centerText(this.scene, 150, "", "#ffffff"));
     this.message.setVisible(false);
+  }
+
+  setMuted(muted: boolean): void {
+    this.muteLabel.setVisible(muted);
   }
 
   setClock(minutes: number, late: boolean, timeMs: number): void {

@@ -27,6 +27,7 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     centerText(this, 96, "CARICAMENTO", "#aaaaaa");
+    this.load.audio("ost", ["music/ost.ogg", "music/ost.mp3"]);
     this.skinName = currentSkinName();
     if (this.skinName) {
       this.load.json(MANIFEST_KEY, skinFileURL(this.skinName, "skin.json"));
