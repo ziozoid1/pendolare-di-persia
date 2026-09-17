@@ -38,7 +38,7 @@ type Member = Person | "player";
 
 interface Cabin {
   x: number;
-  door: Phaser.GameObjects.Image;
+  capsule: Phaser.GameObjects.Sprite;
   panel: Phaser.GameObjects.Text;
   open: boolean;
   timer: number;
@@ -76,13 +76,11 @@ export class ElevatorHall extends Entity {
   override create(): void {
     this.frontX = this.num("frontX", 222);
 
-    // due porte: gli arrivi si alternano, la fila e' una sola
-    const doors = [this.num("doorA", 250), this.num("doorB", 292)];
+    // due vani: gli arrivi si alternano, la fila e' una sola
+    const doors = [this.num("doorA", 252), this.num("doorB", 284)];
+    const cycle = this.num("cabinCycle", 8.5);
     doors.forEach((x, i) => {
-      const door = this.host.add
-        .image(x, GROUND_Y, "prop:lift_closed")
-        .setOrigin(0.5, 1)
-        .setDepth(DEPTH.props + 2);
+      // Display del piano (rimane fisso in basso al vano)
       this.host.add
         .image(x, GROUND_Y - 54, "prop:lift_panel")
         .setOrigin(0.5, 1)
@@ -91,12 +89,19 @@ export class ElevatorHall extends Entity {
         .setOrigin(0.5, 0)
         .setDepth(DEPTH.props + 3);
 
-      const cycle = this.num("cabinCycle", 8.5);
+      // Capsula: parte dal punto di arrivo (y=126) o in viaggio (y tra 14 e 126)
+      const initRatio = i === 0 ? 0.55 : 1;
+      const initY = Math.round(Phaser.Math.Linear(126, 14, initRatio));
+      const capsule = this.host.add
+        .sprite(x - 10, initY, "prop:capsula", 2)
+        .setOrigin(0, 1)
+        .setDepth(DEPTH.props + 1);
+
       this.cabins.push({
-        x, door, panel,
+        x, capsule, panel,
         open: false,
         cycle,
-        timer: cycle * (i === 0 ? 0.55 : 1),
+        timer: cycle * initRatio,
         capacity: 0
       });
     });
@@ -197,12 +202,20 @@ export class ElevatorHall extends Entity {
         const ratio = Phaser.Math.Clamp(cabin.timer / cabin.cycle, 0, 1);
         cabin.panel.setText(String(1 + Math.round(33 * ratio)));
         cabin.panel.setColor("#ffff55");
+
+        // Capsula scende da y=14 (in alto, lontana) a y=126 (arrivo)
+        const capsuleY = Math.round(Phaser.Math.Linear(126, 14, ratio));
+        cabin.capsule.setY(capsuleY).setFrame(2);
+
         if (cabin.timer <= 0) this.openCabin(cabin);
       } else {
+        // Capsula ferma in basso: porte aperte con luce
+        cabin.capsule.setY(126).setFrame(1);
+
         if (cabin.timer <= 0) {
           cabin.open = false;
           cabin.timer = cabin.cycle;
-          cabin.door.setTexture("prop:lift_closed");
+          // La capsula parte subito verso l'alto: timer=cycle → ratio=1 → y=14
         }
       }
     }
@@ -211,7 +224,7 @@ export class ElevatorHall extends Entity {
   private openCabin(cabin: Cabin): void {
     cabin.open = true;
     cabin.timer = 2.6;
-    cabin.door.setTexture("prop:lift_open");
+    cabin.capsule.setY(126).setFrame(1);
     cabin.capacity = CAPACITY_SEQUENCE[this.capIndex % CAPACITY_SEQUENCE.length] ?? 2;
     this.capIndex++;
 
@@ -421,7 +434,7 @@ export class ElevatorHall extends Entity {
     this.marker.destroy();
     this.jumperBubble.destroy();
     for (const c of this.cabins) {
-      c.door.destroy();
+      c.capsule.destroy();
       c.panel.destroy();
     }
   }

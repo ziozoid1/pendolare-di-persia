@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { CLIPS, CLIP_ORDER, animKey, canonicalFrames } from "./clips";
 import { bakeActorSheet, FRAME_H, FRAME_W } from "./bakeActors";
-import { bakeBoard, bakeGaribaldiProps, bakeLobbyProps, bakeSlabProps, bakeSolid, bakeStationProps } from "./bakeProps";
+import { bakeBoard, bakeCapsule, bakeGaribaldiProps, bakeLobbyProps, bakeSlabProps, bakeSolid, bakeStationProps } from "./bakeProps";
 import { skinFileURL, type SkinManifest } from "./skin";
 import { ACTOR_IDS, type ActorId, type ClipName } from "../core/types";
 import { EGA } from "./palettes";
@@ -102,6 +102,10 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
   if (skin?.screens?.title) {
     scene.load.image("screen:title", skinFileURL(skin.name, skin.screens.title));
   }
+
+  // ---- capsula ascensore (Stage 3, spritesheet 3×20×24) -----------------
+  const cap = bakeCapsule();
+  scene.load.spritesheet("prop:capsula", cap.dataURL, { frameWidth: 20, frameHeight: 24 });
 }
 
 /**

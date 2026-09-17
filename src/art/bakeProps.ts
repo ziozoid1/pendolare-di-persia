@@ -470,3 +470,57 @@ export function bakeGaribaldiProps(): BakedProp[] {
     }),
   ];
 }
+
+/**
+ * Capsula panoramica degli ascensori (Stage 3).
+ * Spritesheet 60×24: 3 frame da 20×24.
+ * Frame 0: ferma/chiusa  Frame 1: aperta con luce  Frame 2: in corsa
+ */
+export function bakeCapsule(): { dataURL: string } {
+  const { canvas, ctx } = makeCanvas(60, 24);
+  const STEEL  = "#6a6a80";
+  const BODY   = "#2a2a42";
+  const BODY_M = "#32324e";   // corpo in movimento (leggermente piu' chiaro)
+  const WIN_OFF = "#1a1a30";  // finestra spenta
+  const WIN_ON  = "#ffff55";  // finestra illuminata
+  const WIN_MOV = "#3a4a68";  // finestra in corsa
+
+  for (let f = 0; f < 3; f++) {
+    const ox = f * 20;
+    const body = f === 2 ? BODY_M : BODY;
+
+    // Gancio cavo in cima
+    rect(ctx, ox + 8, 0, 4, 2, STEEL);
+
+    // Corpo (bordo + interno)
+    rect(ctx, ox + 1, 2, 18, 22, STEEL);
+    rect(ctx, ox + 2, 3, 16, 20, body);
+
+    // Finestra
+    const wc = f === 0 ? WIN_OFF : f === 1 ? WIN_ON : WIN_MOV;
+    rect(ctx, ox + 4, 5, 12, 7, wc);
+    if (f === 1) {
+      // riflesso superiore
+      rect(ctx, ox + 4, 5, 12, 1, "#ffffaa");
+    }
+
+    // Righe di velocita' (solo frame 2)
+    if (f === 2) {
+      rect(ctx, ox + 4, 14, 7, 1, "#44446a");
+      rect(ctx, ox + 4, 16, 10, 1, "#44446a");
+      rect(ctx, ox + 4, 18, 5, 1, "#44446a");
+    }
+
+    // Porta aperta (solo frame 1): luce sul pavimento
+    if (f === 1) {
+      rect(ctx, ox + 2, 18, 7, 5, "#2a2a42");
+      rect(ctx, ox + 11, 18, 7, 5, "#2a2a42");
+      rect(ctx, ox + 8, 18, 4, 5, "#44440a");
+    }
+
+    // Highlight laterale sinistro
+    rect(ctx, ox + 2, 3, 1, 20, "#3a3a5a");
+  }
+
+  return { dataURL: toDataURL(canvas) };
+}

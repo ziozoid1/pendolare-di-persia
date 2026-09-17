@@ -16,15 +16,16 @@ export const STAGE3: StageDef = {
   clockDeadline: 9 * 60 + 25,
   patience: 3,
   backdrop: "atrio",
+  skin: "torre-ascensori",
   next: "Stage4",
   floor: [{ x: 0, w: GAME_W }],
   entities: [
     {
       kind: "elevator-hall",
       x: 0,
-      frontX: 222,
-      doorA: 250,
-      doorB: 292,
+      frontX: 236,
+      doorA: 252,
+      doorB: 284,
       initialQueue: 4,
       cabinCycle: 8.5
     }
