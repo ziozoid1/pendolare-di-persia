@@ -26,6 +26,11 @@ export class TitleScene extends Phaser.Scene {
   }
 
   create(): void {
+    // ── musica ───────────────────────────────────────────────────────────
+    if (!this.sound.get("ost")?.isPlaying) {
+      this.sound.add("ost", { loop: true, volume: 0.4 }).play();
+    }
+
     // ── sfondo ──────────────────────────────────────────────────────────
     if (this.textures.exists("screen:title")) {
       this.add.image(0, 0, "screen:title").setOrigin(0, 0);

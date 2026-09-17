@@ -87,6 +87,14 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
 
     this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
+    // M alterna il muto globale (persiste tra le scene grazie al SoundManager condiviso)
+    this.input.keyboard!.on("keydown-M", () => {
+      this.sound.mute = !this.sound.mute;
+      this.hud.setMuted(this.sound.mute);
+    });
+
+    this.hud.setMuted(this.sound.mute);
+
     this.showStageTitle();
   }
 
