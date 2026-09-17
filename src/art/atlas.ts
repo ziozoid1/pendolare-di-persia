@@ -97,6 +97,11 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
       }
     }
   }
+
+  // ---- schermate speciali -----------------------------------------------
+  if (skin?.screens?.title) {
+    scene.load.image("screen:title", skinFileURL(skin.name, skin.screens.title));
+  }
 }
 
 /**
