@@ -48,6 +48,11 @@ export interface SkinManifest {
   props?: Record<string, string>;
   /** chiave fondale (es. "stazione") -> livelli di parallasse. */
   backdrops?: Record<string, BackdropSkin>;
+  /** Schermate speciali: immagini a schermo pieno. */
+  screens?: {
+    /** Sfondo della schermata titolo (320x200). */
+    title?: string;
+  };
 }
 
 /**

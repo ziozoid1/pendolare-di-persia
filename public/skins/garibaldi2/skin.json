@@ -1,5 +1,6 @@
 {
   "name": "garibaldi2",
+  "screens": { "title": "titolo.png" },
   "actors": {
     "hero":    { "image": "hero.png" },
     "seller":  { "image": "seller.png" },
