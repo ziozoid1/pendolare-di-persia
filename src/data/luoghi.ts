@@ -9,9 +9,9 @@ export interface Luogo {
 
 /** Cinque luoghi sulla mappa, in ordine geografico ovest→est. */
 export const LUOGHI: Luogo[] = [
-  { nome: "ITALSIDER BAGNOLI",  x:  40, y:  76, sbloccato: true },
-  { nome: "MERGELLINA",         x:  92, y: 100, sbloccato: true },
-  { nome: "CENTRO STORICO",     x: 163, y:  90, sbloccato: true },
+  { nome: "ITALSIDER BAGNOLI",  x:  40, y:  76, sbloccato: true, scena: "StageBagnoli" },
+  { nome: "MERGELLINA",         x:  92, y: 100, sbloccato: true, scena: "StageMergellina" },
+  { nome: "CENTRO STORICO",     x: 163, y:  90, sbloccato: true, scena: "StageStorico" },
   { nome: "P. GARIBALDI",       x: 232, y:  74, sbloccato: true, scena: "Stage1" },
   { nome: "CENTRO DIREZIONALE", x: 292, y:  50, sbloccato: true, scena: "Stage2" },
 ];

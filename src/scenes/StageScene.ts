@@ -271,6 +271,9 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
       [`${this.def.title} COMPLETATA`, `Ore ${hhmm}.`, "", "spazio per continuare"],
       "#55ff55"
     );
-    this.input.keyboard!.once("keydown-SPACE", () => this.scene.start(this.def.next));
+    this.input.keyboard!.once("keydown-SPACE", () => {
+      if (this.def.luogo !== undefined) this.registry.set("lastLuogo", this.def.luogo);
+      this.scene.start(this.def.next);
+    });
   }
 }
