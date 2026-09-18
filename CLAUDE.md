@@ -46,3 +46,9 @@ crasha. E' successo davvero.
 
 **Il rig vive in `src/art/rig.ts`**, cella 32x44, 17 pose. Se un task sembra
 richiedere di spostarlo, ridurlo o sostituirlo: fermati e chiedi.
+
+**Le chiavi di texture devono includere il nome dello skin.** Due skin
+diversi possono contenere file con lo stesso nome, e Phaser non sostituisce
+una texture gia' in cache: il secondo caricamento viene ignorato in
+silenzio, e a schermo compare l'immagine sbagliata. Non da' errori e non
+rompe la build, quindi e' fra i guasti piu' difficili da diagnosticare.
