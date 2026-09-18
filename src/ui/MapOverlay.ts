@@ -22,9 +22,7 @@ export class MapOverlay {
   private clouds:   Array<{ img: Phaser.GameObjects.Image; speed: number }> = [];
   private marks:    LocationMark[] = [];
   private hero!:    Phaser.GameObjects.Sprite;
-  private outline!: Phaser.GameObjects.Graphics;
-  private outlineHW = 0;
-  private outlineHH = 0;
+
   private inCostrTxt!: Phaser.GameObjects.Text;
   private open_ = false;
 
@@ -104,11 +102,6 @@ export class MapOverlay {
 
     // Segnalino mobile
     const src = actorSource("hero");
-    this.outlineHW = Math.ceil((src.frameWidth  * src.scale) / 2);
-    this.outlineHH = Math.ceil( src.frameHeight * src.scale);
-
-    this.outline = this.scene.add.graphics().setScrollFactor(0).setDepth(D + 2);
-    this.push(this.outline);
 
     this.hero = this.scene.add
       .sprite(0, 0, src.textureKey, 0)
@@ -258,17 +251,7 @@ export class MapOverlay {
   }
 
   private redrawSegnalino(): void {
-    const x = Math.round(this.heroX);
-    const y = Math.round(this.heroY);
-    this.hero.setPosition(x, y);
-    this.outline.clear();
-    this.outline.lineStyle(1, 0xd0d8ff, 1);
-    this.outline.strokeRect(
-      x - this.outlineHW - 1,
-      y - this.outlineHH - 1,
-      this.outlineHW * 2 + 2,
-      this.outlineHH + 2
-    );
+    this.hero.setPosition(Math.round(this.heroX), Math.round(this.heroY));
   }
 
   private refreshMark(idx: number, selected: boolean): void {
