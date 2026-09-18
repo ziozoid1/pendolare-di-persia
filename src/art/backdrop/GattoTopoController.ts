@@ -30,7 +30,7 @@ export class GattoTopoController {
   private playTopo(clip: string):  void { this.topo.play(this.key("topo",  clip)); }
 
   private resetTimer(): void {
-    this.timer = 6 + Math.random() * 6;
+    this.timer = 2 + Math.random() * 3;
   }
 
   update(dt: number): void {
