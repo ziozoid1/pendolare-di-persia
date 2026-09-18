@@ -172,6 +172,7 @@ export class TitleScene extends Phaser.Scene {
       ["SU / SPAZIO     SALTARE",        "#c6c2b6"],
       ["GIU             BORSA AL PETTO", "#c6c2b6"],
       ["N               PARLARE",        "#c6c2b6"],
+      ["M               MAPPA",          "#c6c2b6"],
       ["R               RICOMINCIARE",   "#c6c2b6"],
       ["",                               "#c6c2b6"],
       ["VOLUME MUSICA   [presto]",       "#555566"],
