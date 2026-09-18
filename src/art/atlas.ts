@@ -45,6 +45,14 @@ export const SOLID = {
 } as const;
 
 /**
+ * Chiave texture capsula ascensore. Le skin per-stage usano una chiave
+ * namespaced per non collidere con quella globale gia' caricata in queueAssets.
+ */
+export function capsuleTextureKey(skinName?: string): string {
+  return skinName ? `prop:${skinName}:capsula` : "prop:capsula";
+}
+
+/**
  * Mette in coda tutto cio' che serve: fogli degli attori (cotti dal rig o
  * presi dallo skin), oggetti di scena e tinte piatte.
  * Da chiamare dentro create() del BootScene, dopo aver letto skin.json.
@@ -196,11 +204,11 @@ export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): voi
     }
   }
 
-  // prop:capsula è l'unico prop caricato come spritesheet; se la skin per-stage
-  // lo dichiara, va caricato qui perché queueAssets usa solo la skin globale.
+  // prop:capsula caricato con chiave namespaced per non collidere con quella
+  // globale (gia' caricata in queueAssets con bakeCapsule()).
   const capsuleProp = skin.props?.["prop:capsula"];
   if (capsuleProp) {
-    scene.load.spritesheet("prop:capsula", skinFileURL(skin.name, capsuleProp), {
+    scene.load.spritesheet(capsuleTextureKey(skin.name), skinFileURL(skin.name, capsuleProp), {
       frameWidth: 24, frameHeight: 30
     });
   }

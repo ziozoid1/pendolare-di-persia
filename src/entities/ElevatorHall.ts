@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { DEPTH, GROUND_Y } from "../core/constants";
 import { animKey } from "../art/clips";
-import { actorSource } from "../art/atlas";
+import { actorSource, capsuleTextureKey } from "../art/atlas";
 import { pixelText } from "../ui/text";
 import type { ActorId, ClipName } from "../core/types";
 import { Entity } from "./Entity";
@@ -99,7 +99,7 @@ export class ElevatorHall extends Entity {
       const initRatio = i === 0 ? 0.55 : 1;
       const initY = Math.round(Phaser.Math.Linear(110, 0, initRatio));
       const capsule = this.host.add
-        .sprite(x - 12, initY, "prop:capsula", 0)
+        .sprite(x - 12, initY, capsuleTextureKey(this.host.stageSkin), 0)
         .setOrigin(0, 1)
         .setDepth(DEPTH.props + 1);
 
