@@ -14,11 +14,24 @@ export interface ActorSource {
   scale: number;
   frameWidth: number;
   frameHeight: number;
+  /** Prefisso usato nelle chiavi animazione Phaser. Es. "hero" o "torre-ascensori:hero". */
+  animPrefix: string;
 }
 
 const sources = new Map<ActorId, ActorSource>();
+/** Sorgenti degli attori delle skin per-stage: chiave "<skinName>:<actorId>". */
+const skinSources = new Map<string, ActorSource>();
 
-export function actorSource(id: ActorId): ActorSource {
+/**
+ * Restituisce la sorgente di un attore.
+ * Se skinName e' fornito e quello skin dichiara quell'attore usa il suo foglio,
+ * altrimenti ricade sulla skin globale.
+ */
+export function actorSource(id: ActorId, skinName?: string): ActorSource {
+  if (skinName) {
+    const s = skinSources.get(`${skinName}:${id}`);
+    if (s) return s;
+  }
   const s = sources.get(id);
   if (!s) throw new Error(`Attore "${id}" non caricato: manca la fase di boot?`);
   return s;
@@ -61,7 +74,8 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
       origin: override?.origin ?? [0.5, 1],
       scale: override?.scale ?? 1,
       frameWidth,
-      frameHeight
+      frameHeight,
+      animPrefix: id
     });
   }
 
@@ -103,30 +117,101 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
     scene.load.image("screen:title", skinFileURL(skin.name, skin.screens.title));
   }
 
-  // ---- capsula ascensore (Stage 3, spritesheet 3×20×24) -----------------
-  const cap = bakeCapsule();
-  scene.load.spritesheet("prop:capsula", cap.dataURL, { frameWidth: 20, frameHeight: 24 });
+  // ---- capsula ascensore (Stage 3, spritesheet 3×24×30) -----------------
+  // Lo skin puo' sovrascrivere con prop:capsula nel manifest; altrimenti si usa
+  // bakeCapsule() come fallback. In entrambi i casi frameWidth=24, frameHeight=30.
+  const capsuleSkinFile = skin?.props?.["prop:capsula"];
+  const capsuleSrc = capsuleSkinFile
+    ? skinFileURL(skin!.name, capsuleSkinFile)
+    : bakeCapsule().dataURL;
+  scene.load.spritesheet("prop:capsula", capsuleSrc, { frameWidth: 24, frameHeight: 30 });
 }
 
 /**
- * Carica solo le immagini dei fondali dichiarate da un manifest.
- * Usato per le skin per-stage: gli attori restano quelli della skin globale.
+ * Carica i fogli degli attori dichiarati da un manifest per-stage, con chiavi
+ * "actor:<skinName>:<actorId>" per non sovrascrivere quelli globali.
  */
-export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): void {
-  if (!skin.backdrops) return;
-  for (const bd of Object.values(skin.backdrops)) {
-    for (const layer of bd.layers) {
-      scene.load.image(layer.image, skinFileURL(skin.name, layer.image));
+export function queueSkinActors(scene: Phaser.Scene, skin: SkinManifest): void {
+  if (!skin.actors) return;
+  for (const id of ACTOR_IDS) {
+    const override = skin.actors[id];
+    if (!override) continue;
+    const key = `actor:${skin.name}:${id}`;
+    const frameWidth = override.frameWidth ?? FRAME_W;
+    const frameHeight = override.frameHeight ?? FRAME_H;
+    scene.load.spritesheet(key, skinFileURL(skin.name, override.image), { frameWidth, frameHeight });
+    const frames = {} as Record<ClipName, number[]>;
+    for (const clip of CLIP_ORDER) {
+      frames[clip] = override.clips?.[clip] ?? canonicalFrames(clip);
+    }
+    skinSources.set(`${skin.name}:${id}`, {
+      textureKey: key,
+      frames,
+      origin: override.origin ?? [0.5, 1],
+      scale: override.scale ?? 1,
+      frameWidth,
+      frameHeight,
+      animPrefix: `${skin.name}:${id}`
+    });
+  }
+}
+
+/** Registra le animazioni degli attori di una skin per-stage. */
+export function registerSkinActorAnims(scene: Phaser.Scene, skinName: string): void {
+  for (const id of ACTOR_IDS) {
+    const mapKey = `${skinName}:${id}`;
+    const src = skinSources.get(mapKey);
+    if (!src) continue;
+
+    // Se la texture non e' stata caricata (es. 404), rimuovi il source cosi'
+    // actorSource ricade sul global invece di usare una texture mancante.
+    if (!scene.textures.exists(src.textureKey)) {
+      skinSources.delete(mapKey);
+      continue;
+    }
+
+    for (const clip of CLIP_ORDER) {
+      const key = animKey(src.animPrefix, clip);
+      if (scene.anims.exists(key)) continue;
+      scene.anims.create({
+        key,
+        frames: scene.anims.generateFrameNumbers(src.textureKey, { frames: src.frames[clip] }),
+        frameRate: CLIPS[clip].fps,
+        repeat: CLIPS[clip].repeat
+      });
     }
   }
 }
 
-/** Registra un'animazione Phaser per ogni clip di ogni attore. */
+/**
+ * Carica fondali e props spritesheet dichiarati da un manifest per-stage.
+ * Gli attori vengono gestiti separatamente da queueSkinActors.
+ */
+export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): void {
+  if (skin.backdrops) {
+    for (const bd of Object.values(skin.backdrops)) {
+      for (const layer of bd.layers) {
+        scene.load.image(layer.image, skinFileURL(skin.name, layer.image));
+      }
+    }
+  }
+
+  // prop:capsula è l'unico prop caricato come spritesheet; se la skin per-stage
+  // lo dichiara, va caricato qui perché queueAssets usa solo la skin globale.
+  const capsuleProp = skin.props?.["prop:capsula"];
+  if (capsuleProp) {
+    scene.load.spritesheet("prop:capsula", skinFileURL(skin.name, capsuleProp), {
+      frameWidth: 24, frameHeight: 30
+    });
+  }
+}
+
+/** Registra un'animazione Phaser per ogni clip di ogni attore globale. */
 export function registerActorAnims(scene: Phaser.Scene): void {
   for (const id of ACTOR_IDS) {
     const src = actorSource(id);
     for (const clip of CLIP_ORDER) {
-      const key = animKey(id, clip);
+      const key = animKey(src.animPrefix, clip);
       if (scene.anims.exists(key)) continue;
       scene.anims.create({
         key,

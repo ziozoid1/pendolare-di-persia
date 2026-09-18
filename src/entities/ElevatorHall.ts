@@ -31,6 +31,7 @@ interface Person {
   sprite: Phaser.GameObjects.Sprite;
   x: number;
   actor: ActorId;
+  animPrefix: string;
   clip: ClipName | null;
 }
 
@@ -89,11 +90,12 @@ export class ElevatorHall extends Entity {
         .setOrigin(0.5, 0)
         .setDepth(DEPTH.props + 3);
 
-      // Capsula: parte dal punto di arrivo (y=126) o in viaggio (y tra 14 e 126)
+      // Capsula: centrata sul vano (x - 12 = centro - metà frameWidth 24).
+      // Corsa verticale: y=0 (in alto) → y=110 (quota di imbarco).
       const initRatio = i === 0 ? 0.55 : 1;
-      const initY = Math.round(Phaser.Math.Linear(126, 14, initRatio));
+      const initY = Math.round(Phaser.Math.Linear(110, 0, initRatio));
       const capsule = this.host.add
-        .sprite(x - 10, initY, "prop:capsula", 2)
+        .sprite(x - 12, initY, "prop:capsula", 0)
         .setOrigin(0, 1)
         .setDepth(DEPTH.props + 1);
 
@@ -147,20 +149,20 @@ export class ElevatorHall extends Entity {
   }
 
   private makePerson(actor: ActorId, x: number): Person {
-    const src = actorSource(actor);
+    const src = actorSource(actor, this.host.stageSkin);
     const sprite = this.host.add
       .sprite(x, GROUND_Y, src.textureKey, 0)
       .setOrigin(src.origin[0], src.origin[1])
       .setScale(src.scale)
       .setDepth(DEPTH.entities);
-    const person: Person = { sprite, x, actor, clip: null };
+    const person: Person = { sprite, x, actor, animPrefix: src.animPrefix, clip: null };
     this.playPerson(person, "idle");
     return person;
   }
 
   private playPerson(person: Person, clip: ClipName): void {
     if (person.clip === clip) return;
-    person.sprite.play(animKey(person.actor, clip), true);
+    person.sprite.play(animKey(person.animPrefix, clip), true);
     person.clip = clip;
   }
 
@@ -203,19 +205,19 @@ export class ElevatorHall extends Entity {
         cabin.panel.setText(String(1 + Math.round(33 * ratio)));
         cabin.panel.setColor("#ffff55");
 
-        // Capsula scende da y=14 (in alto, lontana) a y=126 (arrivo)
-        const capsuleY = Math.round(Phaser.Math.Linear(126, 14, ratio));
-        cabin.capsule.setY(capsuleY).setFrame(2);
+        // Capsula scende da y=0 (in alto) a y=110 (quota di imbarco)
+        const capsuleY = Math.round(Phaser.Math.Linear(110, 0, ratio));
+        cabin.capsule.setY(capsuleY).setFrame(0);
 
         if (cabin.timer <= 0) this.openCabin(cabin);
       } else {
         // Capsula ferma in basso: porte aperte con luce
-        cabin.capsule.setY(126).setFrame(1);
+        cabin.capsule.setY(110).setFrame(1);
 
         if (cabin.timer <= 0) {
           cabin.open = false;
           cabin.timer = cabin.cycle;
-          // La capsula parte subito verso l'alto: timer=cycle → ratio=1 → y=14
+          // La capsula parte subito verso l'alto: timer=cycle → ratio=1 → y=0
         }
       }
     }
@@ -224,7 +226,7 @@ export class ElevatorHall extends Entity {
   private openCabin(cabin: Cabin): void {
     cabin.open = true;
     cabin.timer = 2.6;
-    cabin.capsule.setY(126).setFrame(1);
+    cabin.capsule.setY(110).setFrame(1);
     cabin.capacity = CAPACITY_SEQUENCE[this.capIndex % CAPACITY_SEQUENCE.length] ?? 2;
     this.capIndex++;
 

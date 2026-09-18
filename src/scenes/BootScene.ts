@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { queueAssets, queueSkinBackdrops, registerActorAnims } from "../art/atlas";
+import { queueAssets, queueSkinActors, queueSkinBackdrops, registerActorAnims, registerSkinActorAnims } from "../art/atlas";
 import { currentSkinName, skinFileURL, type SkinManifest } from "../art/skin";
 import { centerText } from "../ui/text";
 import { ALL_STAGES } from "../levels";
@@ -60,6 +60,7 @@ export class BootScene extends Phaser.Scene {
     const perStageNames = new Set(
       ALL_STAGES.map(s => s.skin).filter((s): s is string => !!s && s !== this.skinName)
     );
+    const loadedPerStage: string[] = [];
     for (const name of perStageNames) {
       const key = perStageKey(name);
       if (this.cache.json.exists(key)) {
@@ -67,11 +68,16 @@ export class BootScene extends Phaser.Scene {
         const manifest: SkinManifest = { ...raw, name: raw.name ?? name };
         this.registry.set(key, manifest);
         queueSkinBackdrops(this, manifest);
+        queueSkinActors(this, manifest);
+        loadedPerStage.push(name);
       }
     }
 
     this.load.once("complete", () => {
       registerActorAnims(this);
+      for (const name of loadedPerStage) {
+        registerSkinActorAnims(this, name);
+      }
       this.scene.start("Title");
     });
     this.load.start();

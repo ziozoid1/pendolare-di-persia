@@ -11,6 +11,8 @@ import type { EncounterOptions } from "../ui/Encounter";
 export interface StageHost extends Phaser.Scene {
   readonly player: Player;
   readonly isPlaying: boolean;
+  /** Nome della skin dello stage, se dichiarata in StageDef.skin. */
+  readonly stageSkin: string | undefined;
   hurt(reason: string): void;
   lose(reason: string): void;
   completeStage(): void;
