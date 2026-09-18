@@ -94,7 +94,10 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     // M apre/chiude la mappa; ESC chiude se aperta
-    this.mapOverlay = new MapOverlay(this, this.def.luogo);
+    this.mapOverlay = new MapOverlay(this, this.def.luogo, (scena) => {
+      this.mapOverlay.close();
+      this.scene.start(scena);
+    });
     this.mapOverlay.build();
     this.input.keyboard!.on("keydown-M",   () => this.toggleMap());
     this.input.keyboard!.on("keydown-ESC", () => { if (this.mapOverlay.isOpen) this.closeMap(); });
@@ -154,7 +157,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     this.hud.update(dt);
 
     // R a meta' partita: riavvia subito (JustDown funziona con fisica attiva)
-    if (this.state === "play" && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+    if (this.state === "play" && !this.mapOverlay.isOpen && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
       this.scene.start(this.def.key);
       return;
     }
