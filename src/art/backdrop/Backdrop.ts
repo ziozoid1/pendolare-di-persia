@@ -22,7 +22,7 @@ export interface Backdrop {
  */
 export function createBackdrop(name: string, skin: SkinManifest | null): Backdrop {
   const fromSkin = skin?.backdrops?.[name];
-  if (fromSkin) return new ImageBackdrop(fromSkin);
+  if (fromSkin) return new ImageBackdrop(fromSkin, skin!.name);
 
   switch (name) {
     case "garibaldi":

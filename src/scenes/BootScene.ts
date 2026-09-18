@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { queueAssets, queueSkinActors, queueSkinBackdrops, registerActorAnims, registerSkinActorAnims } from "../art/atlas";
+import { queueAssets, queueBgActors, queueSkinActors, queueSkinBackdrops, registerActorAnims, registerBgActorAnims, registerSkinActorAnims } from "../art/atlas";
 import { currentSkinName, skinFileURL, type SkinManifest } from "../art/skin";
 import { centerText } from "../ui/text";
 import { ALL_STAGES } from "../levels";
@@ -55,12 +55,13 @@ export class BootScene extends Phaser.Scene {
     this.registry.set("skin", skin);
 
     queueAssets(this, skin);
+    if (skin) queueBgActors(this, skin);
 
     // Registra le skin per-stage e accoda le loro immagini di fondale
     const perStageNames = new Set(
       ALL_STAGES.map(s => s.skin).filter((s): s is string => !!s && s !== this.skinName)
     );
-    const loadedPerStage: string[] = [];
+    const loadedManifests: SkinManifest[] = [];
     for (const name of perStageNames) {
       const key = perStageKey(name);
       if (this.cache.json.exists(key)) {
@@ -69,14 +70,17 @@ export class BootScene extends Phaser.Scene {
         this.registry.set(key, manifest);
         queueSkinBackdrops(this, manifest);
         queueSkinActors(this, manifest);
-        loadedPerStage.push(name);
+        queueBgActors(this, manifest);
+        loadedManifests.push(manifest);
       }
     }
 
     this.load.once("complete", () => {
       registerActorAnims(this);
-      for (const name of loadedPerStage) {
-        registerSkinActorAnims(this, name);
+      if (skin) registerBgActorAnims(this, skin);
+      for (const manifest of loadedManifests) {
+        registerSkinActorAnims(this, manifest.name);
+        registerBgActorAnims(this, manifest);
       }
       this.scene.start("Title");
     });
