@@ -23,9 +23,9 @@ export const STAGE3: StageDef = {
     {
       kind: "elevator-hall",
       x: 0,
-      frontX: 236,
-      doorA: 252,
-      doorB: 284,
+      frontX: 212,
+      doorA: 232,
+      doorB: 279,
       initialQueue: 4,
       cabinCycle: 8.5
     }

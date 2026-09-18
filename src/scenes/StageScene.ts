@@ -42,6 +42,10 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     return this.state === "play" && this.encounter === null;
   }
 
+  get stageSkin(): string | undefined {
+    return this.def.skin;
+  }
+
   private get screens(): number {
     return Math.max(1, Math.round(this.def.width / GAME_W));
   }
