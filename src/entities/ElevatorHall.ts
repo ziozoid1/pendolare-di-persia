@@ -33,6 +33,9 @@ interface Person {
   actor: ActorId;
   animPrefix: string;
   clip: ClipName | null;
+  seed: number;
+  yOffset: number;   // scostamento visivo: -1 | 0 | 1 — mai usato per la logica
+  timeScale: number; // 0.8 – 1.2, varia la cadenza dell'animazione
 }
 
 type Member = Person | "player";
@@ -70,6 +73,7 @@ export class ElevatorHall extends Entity {
   private jumperTimer = 6;
   private spawnTimer = 5;
   private driftTimer = 0;
+  private personCount = 0;
   private protestCooldown = 0;
   private capIndex = 0;
   private boarded = false;
@@ -150,12 +154,16 @@ export class ElevatorHall extends Entity {
 
   private makePerson(actor: ActorId, x: number): Person {
     const src = actorSource(actor, this.host.stageSkin);
+    const seed = this.personCount++;
+    // yOffset != 0 solo a uno su tre, alterna -1 e +1 senza regolarita' visiva
+    const yOffset = seed % 3 === 0 ? (seed % 6 === 0 ? -1 : 1) : 0;
+    const timeScale = 0.8 + (seed % 5) * 0.1;
     const sprite = this.host.add
       .sprite(x, GROUND_Y, src.textureKey, 0)
       .setOrigin(src.origin[0], src.origin[1])
       .setScale(src.scale)
       .setDepth(DEPTH.entities);
-    const person: Person = { sprite, x, actor, animPrefix: src.animPrefix, clip: null };
+    const person: Person = { sprite, x, actor, animPrefix: src.animPrefix, clip: null, seed, yOffset, timeScale };
     this.playPerson(person, "idle");
     return person;
   }
@@ -164,6 +172,13 @@ export class ElevatorHall extends Entity {
     if (person.clip === clip) return;
     person.sprite.play(animKey(person.animPrefix, clip), true);
     person.clip = clip;
+    // Ripristina timeScale dopo ogni play() che lo azzera
+    person.sprite.anims.timeScale = person.timeScale;
+    // Sfasa la clip idle al fase derivata dal seme (0, 0.25, 0.5, 0.75)
+    if (clip === "idle") {
+      const PHASES = [0, 0.25, 0.5, 0.75] as const;
+      person.sprite.anims.setProgress(PHASES[person.seed % 4]!);
+    }
   }
 
   /** Avvicina una persona al suo posto e scegli la clip di conseguenza. */
@@ -173,11 +188,13 @@ export class ElevatorHall extends Entity {
       person.x = targetX;
       this.playPerson(person, "idle");
       person.sprite.setFlipX(false);
+      person.sprite.y = GROUND_Y + person.yOffset; // scarto visivo solo da fermo
     } else {
       const dir = Math.sign(dx);
       person.x += dir * speed * dt;
       this.playPerson(person, "walk");
       person.sprite.setFlipX(dir < 0);
+      person.sprite.y = GROUND_Y; // nessun offset mentre cammina
     }
     person.sprite.x = Math.round(person.x);
   }
