@@ -115,7 +115,7 @@ export function queueAssets(scene: Phaser.Scene, skin: SkinManifest | null): voi
   if (skin?.backdrops) {
     for (const bd of Object.values(skin.backdrops)) {
       for (const layer of bd.layers) {
-        scene.load.image(layer.image, skinFileURL(skin.name, layer.image));
+        scene.load.image(`bg:${skin.name}:${layer.image}`, skinFileURL(skin.name, layer.image));
       }
     }
   }
@@ -199,7 +199,7 @@ export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): voi
   if (skin.backdrops) {
     for (const bd of Object.values(skin.backdrops)) {
       for (const layer of bd.layers) {
-        scene.load.image(layer.image, skinFileURL(skin.name, layer.image));
+        scene.load.image(`bg:${skin.name}:${layer.image}`, skinFileURL(skin.name, layer.image));
       }
     }
   }
