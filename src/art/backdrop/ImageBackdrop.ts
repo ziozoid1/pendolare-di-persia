@@ -31,16 +31,17 @@ export class ImageBackdrop implements Backdrop {
       const depth = layer.depth ?? DEPTH.sky + i;
       const factor = layer.scrollFactor ?? 1;
 
+      const texKey = `bg:${this.skinName}:${layer.image}`;
       if (layer.tile !== false) {
         const h = layer.height ?? GAME_H - y;
         const sprite = scene.add
-          .tileSprite(0, y, GAME_W, h, layer.image)
+          .tileSprite(0, y, GAME_W, h, texKey)
           .setOrigin(0, 0)
           .setScrollFactor(0)
           .setDepth(depth);
         this.tiles.push({ sprite, factor, speed: layer.speed ?? 0 });
       } else {
-        scene.add.image(0, y, layer.image)
+        scene.add.image(0, y, texKey)
           .setOrigin(0, 0)
           .setScrollFactor(factor)
           .setDepth(depth);
