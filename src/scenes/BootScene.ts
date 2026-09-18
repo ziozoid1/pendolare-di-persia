@@ -28,6 +28,8 @@ export class BootScene extends Phaser.Scene {
   preload(): void {
     centerText(this, 96, "CARICAMENTO", "#aaaaaa");
     this.load.audio("ost", ["music/ost.ogg", "music/ost.mp3"]);
+    this.load.image("map:bg", "skins/mappa/mappa.png");
+    this.load.spritesheet("map:nuvole", "skins/mappa/nuvole.png", { frameWidth: 74, frameHeight: 28 });
     this.skinName = currentSkinName();
     if (this.skinName) {
       this.load.json(MANIFEST_KEY, skinFileURL(this.skinName, "skin.json"));

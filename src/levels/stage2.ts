@@ -24,6 +24,7 @@ export const STAGE2: StageDef = {
   patience: 3,
   backdrop: "centro-direzionale",
   skin: "centro-direzionale",
+  luogo: 4,
   next: "Stage3",
   floor: [
     { x: 0, w: 400 },

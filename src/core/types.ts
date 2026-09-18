@@ -50,4 +50,6 @@ export interface StageDef {
   next: string;
   /** Skin da usare per il fondale di questo stage (sovrascrive la skin globale). */
   skin?: string;
+  /** Indice in LUOGHI (src/data/luoghi.ts) per il segnalino sulla mappa. */
+  luogo?: number;
 }

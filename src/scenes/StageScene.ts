@@ -11,6 +11,7 @@ import { spawnEntity } from "../entities/registry";
 import type { Entity, StageHost } from "../entities/Entity";
 import { Encounter, type EncounterOptions } from "../ui/Encounter";
 import { HUD } from "../ui/HUD";
+import { MapOverlay } from "../ui/MapOverlay";
 import { showOverlay } from "../ui/Overlay";
 
 type StageState = "play" | "lost" | "won";
@@ -37,6 +38,7 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
   private lastSafeX = 0;
   private objective: { ratio: number; label: string } | null = null;
   private restartKey!: Phaser.Input.Keyboard.Key;
+  private mapOverlay!: MapOverlay;
 
   get isPlaying(): boolean {
     return this.state === "play" && this.encounter === null;
@@ -91,11 +93,11 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
 
     this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-    // M alterna il muto globale (persiste tra le scene grazie al SoundManager condiviso)
-    this.input.keyboard!.on("keydown-M", () => {
-      this.sound.mute = !this.sound.mute;
-      this.hud.setMuted(this.sound.mute);
-    });
+    // M apre/chiude la mappa; ESC chiude se aperta
+    this.mapOverlay = new MapOverlay(this, this.def.luogo);
+    this.mapOverlay.build();
+    this.input.keyboard!.on("keydown-M",   () => this.toggleMap());
+    this.input.keyboard!.on("keydown-ESC", () => { if (this.mapOverlay.isOpen) this.closeMap(); });
 
     this.hud.setMuted(this.sound.mute);
 
@@ -126,6 +128,24 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     });
   }
 
+  private toggleMap(): void {
+    if (this.mapOverlay.isOpen) {
+      this.closeMap();
+    } else if (this.state === "play" && this.overlayObjects.length === 0) {
+      this.openMap();
+    }
+  }
+
+  private openMap(): void {
+    this.physics.world.pause();
+    this.mapOverlay.open();
+  }
+
+  private closeMap(): void {
+    this.physics.world.resume();
+    this.mapOverlay.close();
+  }
+
   update(time: number, delta: number): void {
     const dt = Math.min(delta, 50) / 1000;
     const cam = this.cameras.main;
@@ -142,6 +162,9 @@ export abstract class StageScene extends Phaser.Scene implements StageHost {
     // Fine partita: i listener once() in lose() / completeStage() gestiscono le transizioni
     if (this.state !== "play") return;
     if (this.overlayObjects.length > 0) return; // titolo dello stage ancora a schermo
+
+    // Mappa aperta: tutto fermo tranne le nuvole
+    if (this.mapOverlay.isOpen) { this.mapOverlay.update(dt); return; }
 
     // orologio
     this.clock += delta * CLOCK_MINUTES_PER_MS;

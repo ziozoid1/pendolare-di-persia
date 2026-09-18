@@ -17,6 +17,7 @@ export const STAGE3: StageDef = {
   patience: 3,
   backdrop: "atrio",
   skin: "torre-ascensori",
+  luogo: 4,
   next: "Stage4",
   floor: [{ x: 0, w: GAME_W }],
   entities: [
