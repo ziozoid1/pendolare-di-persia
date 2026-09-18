@@ -5,6 +5,10 @@ import { TitleScene } from "./scenes/TitleScene";
 import { Stage1Scene } from "./scenes/Stage1Scene";
 import { Stage2Scene } from "./scenes/Stage2Scene";
 import { Stage3Scene } from "./scenes/Stage3Scene";
+import { StageBagnoliScene } from "./scenes/StageBagnoliScene";
+import { StageMergellinaScene } from "./scenes/StageMergellinaScene";
+import { StageStoricoScene } from "./scenes/StageStoricoScene";
+import { MapScene } from "./scenes/MapScene";
 import { buildRemainingScenes } from "./scenes/SoonScene";
 
 /**
@@ -41,6 +45,10 @@ const game = new Phaser.Game({
     new Stage1Scene(),
     new Stage2Scene(),
     new Stage3Scene(),
+    new StageBagnoliScene(),
+    new StageMergellinaScene(),
+    new StageStoricoScene(),
+    new MapScene(),
     ...buildRemainingScenes()
   ]
 });

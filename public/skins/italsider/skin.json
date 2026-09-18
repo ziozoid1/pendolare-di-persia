@@ -1,0 +1,11 @@
+{
+  "name": "italsider",
+  "actors": { "hero": { "image": "hero.png" } },
+  "backdrops": {
+    "italsider": {
+      "layers": [
+        { "image": "fondale.png", "y": 0, "height": 200, "scrollFactor": 1, "tile": false }
+      ]
+    }
+  }
+}
