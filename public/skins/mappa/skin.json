@@ -1,0 +1,5 @@
+{
+  "name": "mappa",
+  "screens": { "map": "mappa.png" },
+  "props": { "prop:nuvole": "nuvole.png" }
+}
