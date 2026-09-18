@@ -8,6 +8,34 @@
       "layers": [
         { "image": "citta.png",  "y": 0,   "height": 142, "scrollFactor": 0.45, "tile": true },
         { "image": "piazza.png", "y": 139, "height": 61,  "scrollFactor": 1,    "tile": true }
+      ],
+      "actors": [
+        {
+          "id": "gatto",
+          "image": "gatto.png",
+          "frameWidth": 27,
+          "frameHeight": 17,
+          "x": 98,
+          "y": 157,
+          "clips": {
+            "dorme":     { "frames": [0, 1],    "fps": 2,  "repeat": -1 },
+            "sveglia":   { "frames": [2, 3],    "fps": 6,  "repeat": 0  },
+            "zampata":   { "frames": [4, 5, 6], "fps": 8,  "repeat": 0  },
+            "riaccuccia":{ "frames": [7],       "fps": 2,  "repeat": 0  }
+          }
+        },
+        {
+          "id": "topo",
+          "image": "topo.png",
+          "frameWidth": 16,
+          "frameHeight": 10,
+          "x": 300,
+          "y": 165,
+          "clips": {
+            "cammina": { "frames": [0, 1, 2, 3], "fps": 8,  "repeat": -1 },
+            "corre":   { "frames": [4, 5, 6, 7], "fps": 14, "repeat": -1 }
+          }
+        }
       ]
     }
   }

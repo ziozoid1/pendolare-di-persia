@@ -37,8 +37,20 @@ export interface BackdropLayerSkin {
   speed?: number;
 }
 
+export interface BackdropActorSkin {
+  id: string;
+  image: string;
+  frameWidth: number;
+  frameHeight: number;
+  x: number;
+  y: number;
+  depth?: number;
+  clips: Record<string, { frames: number[]; fps: number; repeat: number }>;
+}
+
 export interface BackdropSkin {
   layers: BackdropLayerSkin[];
+  actors?: BackdropActorSkin[];
 }
 
 export interface SkinManifest {

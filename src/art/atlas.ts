@@ -214,6 +214,41 @@ export function queueSkinBackdrops(scene: Phaser.Scene, skin: SkinManifest): voi
   }
 }
 
+/**
+ * Carica gli spritesheet degli attori di fondale dichiarati nel manifest.
+ * Chiavi "bgactor:<skinName>:<id>" per non collidere con altri asset.
+ */
+export function queueBgActors(scene: Phaser.Scene, skin: SkinManifest): void {
+  for (const bd of Object.values(skin.backdrops ?? {})) {
+    for (const actor of bd.actors ?? []) {
+      scene.load.spritesheet(`bgactor:${skin.name}:${actor.id}`, skinFileURL(skin.name, actor.image), {
+        frameWidth: actor.frameWidth,
+        frameHeight: actor.frameHeight
+      });
+    }
+  }
+}
+
+/** Registra le animazioni degli attori di fondale di una skin. */
+export function registerBgActorAnims(scene: Phaser.Scene, skin: SkinManifest): void {
+  for (const bd of Object.values(skin.backdrops ?? {})) {
+    for (const actor of bd.actors ?? []) {
+      const texKey = `bgactor:${skin.name}:${actor.id}`;
+      if (!scene.textures.exists(texKey)) continue;
+      for (const [clipName, clip] of Object.entries(actor.clips)) {
+        const key = `bgactor:${skin.name}:${actor.id}:${clipName}`;
+        if (scene.anims.exists(key)) continue;
+        scene.anims.create({
+          key,
+          frames: scene.anims.generateFrameNumbers(texKey, { frames: clip.frames }),
+          frameRate: clip.fps,
+          repeat: clip.repeat
+        });
+      }
+    }
+  }
+}
+
 /** Registra un'animazione Phaser per ogni clip di ogni attore globale. */
 export function registerActorAnims(scene: Phaser.Scene): void {
   for (const id of ACTOR_IDS) {
