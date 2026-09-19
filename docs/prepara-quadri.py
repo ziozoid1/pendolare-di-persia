@@ -10,7 +10,7 @@ import os
 QUADRI = [
     ("italsider",      "italsider-stage.jpeg",         0.860),
     ("mergellina",     "Gemini_Generated_Image_z1ou2pz1ou2pz1ou.jpeg", 0.840),
-    ("centro-storico", "centrostoricofinal.jpeg",      0.875),
+    ("centro-storico", "Gemini_Generated_Image_hqtktmhqtktmhqtk.jpeg", 0.875),
 ]
 SUOLO = 168
 

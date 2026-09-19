@@ -1,58 +1,40 @@
-# Tre quadri nuovi: Bagnoli, Mergellina, Centro storico
+# Pipeline delle immagini dentro il repository
 
-Gli asset esistono gia' in `public/skins/`: **non ridisegnare nulla**.
-Se un file ti sembra mancante, fermati e dillo.
+Da questa consegna, i PNG del gioco si rigenerano dal repository: non
+arrivano piu' come file da sostituire a mano.
 
-| skin | fondale | larghezza | chiave del backdrop |
-|---|---|---|---|
-| `italsider` | fondale.png | 355 px | `italsider` |
-| `mergellina` | fondale.png | 542 px | `mergellina` |
-| `centro-storico` | fondale.png | 404 px | `centro-storico` |
+## Cosa contiene la consegna
 
-Ogni fondale e' alto 200, non piastrellabile, gia' allineato: la quota su
-cui camminano le figure dipinte cade esattamente su `GROUND_Y`.
+- `assets-sorgente/` — le immagini originali da cui derivano tutti i PNG
+- `scripts/asset/` — gli script che le trasformano (Python + Pillow)
+- `scripts/rigenera.sh` — li esegue tutti, o solo quello indicato
+- `scripts/applica.sh` — applica una consegna scaricata
+- `scripts/verifica.sh` — controlla che skin e livelli combacino
+- `docs/pipeline-immagini.md` — come funziona
 
 ## Cosa fare
 
-Tre stage nuovi, **volutamente minimi**: servono a vedere i quadri in gioco
-prima di progettarne le meccaniche. Nessun ostacolo, nessun nemico.
-
-Per ciascuno, un file dati in `src/levels/` e una sottoclasse di
-`StageScene`, sul modello di quelli esistenti:
-
-```
-StageBagnoli    skin "italsider"       backdrop "italsider"       larghezza 355
-StageMergellina skin "mergellina"      backdrop "mergellina"      larghezza 542
-StageStorico    skin "centro-storico"  backdrop "centro-storico"  larghezza 404
-```
-
-Per tutti e tre:
-- pavimento pieno per l'intera larghezza, nessuna buca
-- partenza a sinistra, `exit` a destra a 40 px dal bordo
-- pazienza 3, orologio con venti minuti di margine
-- `next` punta alla mappa, non a un altro stage
-
-## Collegamento alla mappa
-
-In `src/data/luoghi.ts` associa le scene agli indici:
+1. Verifica che `python3 -c "import PIL"` funzioni; se manca,
+   `pip3 install Pillow`.
+2. Esegui `./scripts/rigenera.sh` e controlla che rigeneri i PNG senza
+   errori e che il gioco resti identico a prima.
+3. Esegui `./scripts/verifica.sh` e sistema quello che segnala.
+4. Aggiungi a `CLAUDE.md`, nella sezione dei comandi:
 
 ```
-0 ITALSIDER BAGNOLI  -> StageBagnoli
-1 MERGELLINA         -> StageMergellina
-2 CENTRO STORICO     -> StageStorico
+./scripts/rigenera.sh [nome]   rigenera i PNG da assets-sorgente/
+./scripts/applica.sh [nome]    applica una consegna scaricata
+./scripts/verifica.sh          controlla che skin e livelli combacino
 ```
 
-Da ora tutti e cinque i luoghi hanno una scena, quindi la scritta
-"IN COSTRUZIONE" non compare piu' per nessuno.
+   e questa regola:
 
-## Verifica
+   **I PNG in `public/skins/` non si modificano a mano: sono generati.**
+   Per cambiare un'immagine si modifica lo script corrispondente in
+   `scripts/asset/` e si rigenera. Se serve un disegno nuovo, quello
+   arriva da fuori e va in `assets-sorgente/`.
 
-Da `?stage=1`, premi M, spostati con le frecce su ciascuno dei tre luoghi
-nuovi, premi invio: si apre il quadro, il protagonista cammina da sinistra a
-destra sul pavimento senza galleggiare, e arrivato all'uscita si torna alla
-mappa.
+5. Committa `assets-sorgente/` nel repository: sono 9 MB una volta sola, e
+   senza di loro la pipeline non e' riproducibile.
 
-Vincoli: nessuna modifica alla meccanica di gioco, nessuna riformattazione.
-`npm run build` deve passare.
-
-Branch: `feat/tre-quadri`
+Branch: `feat/pipeline-immagini`
