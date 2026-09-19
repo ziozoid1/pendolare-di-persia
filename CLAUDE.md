@@ -52,3 +52,16 @@ diversi possono contenere file con lo stesso nome, e Phaser non sostituisce
 una texture gia' in cache: il secondo caricamento viene ignorato in
 silenzio, e a schermo compare l'immagine sbagliata. Non da' errori e non
 rompe la build, quindi e' fra i guasti piu' difficili da diagnosticare.
+
+**I PNG in `public/skins/` non si modificano a mano: sono generati.**
+Per cambiare un'immagine si modifica lo script corrispondente in
+`scripts/asset/` e si rigenera. Se serve un disegno nuovo, quello
+arriva da fuori e va in `assets-sorgente/`.
+
+## Comandi della pipeline immagini
+
+```
+./scripts/rigenera.sh [nome]   rigenera i PNG da assets-sorgente/
+./scripts/applica.sh [nome]    applica una consegna scaricata
+./scripts/verifica.sh          controlla che skin e livelli combacino
+```
